@@ -1,0 +1,18 @@
+--- tvips/CMakeLists.txt.orig
++++ tvips/CMakeLists.txt
+@@ -445,6 +445,7 @@ add_executable(ser2smv
+   tiff.c
+   tvips.c
+   util.c)
++add_dependencies(ser2smv _update_version_h)
+ target_compile_features(ser2smv PRIVATE c_restrict cxx_constexpr)
+ target_include_directories(ser2smv PRIVATE
+   "${PROJECT_BINARY_DIR}"
+@@ -636,6 +637,7 @@ if(BUILD_JIFFIES)
+     frame.c
+     smv2pgm.c
+     util.c)
++  add_dependencies(smv2pgm _update_version_h)
+   target_include_directories(smv2pgm PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")

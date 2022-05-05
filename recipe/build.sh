@@ -1,16 +1,26 @@
 #! /bin/sh
 
-echo "v0.1.0-dev.4-0-g134e6f3-experimental/jiffies" \
-    > "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
-rm "${SRC_DIR}/VERSION"
+test "${PKG_BUILDNUM}" != "0" && buildmetadata="${PKG_BUILDNUM}"
+cat << EOF > "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
+MICROED_TOOLS_VERSION_BRANCH=experimental/jiffies
+MICROED_TOOLS_VERSION_BUILDMETA=${buildmetadata}
+MICROED_TOOLS_VERSION_OBJECT_NAME=d0bd797
+MICROED_TOOLS_VERSION_PRERELEASE=dev.5
+MICROED_TOOLS_VERSION_STATE=
+PACKAGE_VERSION_MAJOR=0
+PACKAGE_VERSION_MINOR=1
+PACKAGE_VERSION_PATCH=0
+PACKAGE_VERSION_TWEAK=0
+EOF
 
 cmake ${CMAKE_ARGS}                              \
+    -DBUILD_PYTHON_MODULE:BOOL=ON                \
     -DCMAKE_C_FLAGS:STRING="${CFLAGS} -Wall"     \
     -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} -Wall" \
+    -DPython3_EXECUTABLE:PATH="${PYTHON}"        \
     "${SRC_DIR}"
 
 cmake --build . --parallel "${CPU_COUNT}"
-cmake --build . --parallel "${CPU_COUNT}" --target man
 cmake --install . --prefix "${PREFIX}"
 
 install -D -m 644                        \

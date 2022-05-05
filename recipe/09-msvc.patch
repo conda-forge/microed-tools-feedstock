@@ -1,0 +1,1153 @@
+Fixes for Microsoft Visual C++:
+
+* Define "restrict" to an empty value
+
+* Provide fallback-implementations for basename(3), dirname(3),
+  strndup(3), and warn(3)
+
+* Unbreak fallback-implementations for err(3) and warnx(3)
+
+* Unbreak _byteswap_ushort(), _byteswap_ulong(), and _byteswap_uint64()
+
+* Use _stricmp() and _strnicmp() instead of strcasecmp(3) and
+  strncasecmp(3), respectively
+
+* Include BaseTsd.h for ssize_t
+
+* Use srand() instead of srandom()
+
+* Avoid arithmetic on void pointers
+
+* Use memcmp(3) instead of bcmp(3)
+
+* Provide timespec structure in Cython
+
+* Use GetUserName() and GetComputerNameExA() instead of getlogin(3)
+  and getaddrinfo(3), respectively
+
+* Use new function dupenv() instead of getenv() throughout
+
+* Use perror(3) instead of strerror(3)
+
+* Use static memory for basename() and dirname() compatibility
+  implementations
+
+* Use gmtime_s() and localtime_s() instead of gmtime() and localtime()
+
+* Use _umask_s() and _sopen_s() on Windows
+
+* Use sscanf_s() on Windows
+
+--- tvips/CMakeLists.txt.orig
++++ tvips/CMakeLists.txt
+@@ -150,6 +150,12 @@ if(BUILD_PYTHON_MODULE)
+ endif()
+ 
+ 
++# Set HAVE_C_RESTRICT to "c_restrict" if the compilers supports it.
++if("c_restrict" IN_LIST CMAKE_C_KNOWN_FEATURES)
++  set(HAVE_C_RESTRICT "c_restrict")
++endif()
++
++
+ # On macOS _DARWIN_C_SOURCE is required to expose non-POSIX
+ # extensions, such as getprogname(3) and setprogname(3).
+ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+@@ -222,7 +228,7 @@ CHECK_C_SOURCE_COMPILES("
+   HAVE_LIBKERN_OSBYTEORDER_H)
+ 
+ CHECK_C_SOURCE_COMPILES("
+-  #include <sys/stdlib.h>
++  #include <stdlib.h>
+   int
+   main(int argc, char *argv[])
+   {
+@@ -248,11 +254,17 @@ CHECK_SYMBOL_EXISTS(EPROTO errno.h HAVE_EPROTO)
+ 
+ # Check whether certain functions are defined by the standard
+ # libraries.
++CHECK_FUNCTION_EXISTS(basename HAVE_BASENAME)
++CHECK_FUNCTION_EXISTS(dirname HAVE_DIRNAME)
++CHECK_FUNCTION_EXISTS(err HAVE_ERR)
+ CHECK_FUNCTION_EXISTS(gmtime_r HAVE_GMTIME_R)
+ CHECK_FUNCTION_EXISTS(localtime_r HAVE_LOCALTIME_R)
+ CHECK_FUNCTION_EXISTS(realpath HAVE_REALPATH)
+ CHECK_FUNCTION_EXISTS(setenv HAVE_SETENV)
++CHECK_FUNCTION_EXISTS(strndup HAVE_STRNDUP)
+ CHECK_FUNCTION_EXISTS(unsetenv HAVE_UNSETENV)
++CHECK_FUNCTION_EXISTS(warn HAVE_WARN)
++CHECK_FUNCTION_EXISTS(warnx HAVE_WARNX)
+ 
+ 
+ # Check whether the global variable __progname and the non-standard
+@@ -343,7 +355,7 @@ add_executable(dumpframe
+   util.c
+   xml.c)
+ add_dependencies(dumpframe _update_version_h)
+-target_compile_features(dumpframe PRIVATE c_restrict cxx_constexpr)
++target_compile_features(dumpframe PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(dumpframe PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -364,7 +376,7 @@ add_executable(ht2wavelength
+   ht2wavelength.c
+   util.c)
+ add_dependencies(ht2wavelength _update_version_h)
+-target_compile_features(ht2wavelength PRIVATE c_restrict cxx_constexpr)
++target_compile_features(ht2wavelength PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(ht2wavelength PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}")
+@@ -381,7 +393,7 @@ add_executable(idoc2smv
+   tvips.c
+   util.c)
+ add_dependencies(idoc2smv _update_version_h)
+-target_compile_features(idoc2smv PRIVATE c_restrict cxx_constexpr)
++target_compile_features(idoc2smv PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(idoc2smv PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -400,7 +412,7 @@ add_executable(img2px
+   tvips.c
+   util.c)
+ add_dependencies(img2px _update_version_h)
+-target_compile_features(img2px PRIVATE c_restrict cxx_constexpr)
++target_compile_features(img2px PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(img2px PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -424,7 +436,7 @@ add_executable(mrc2smv
+   util.c
+   xml.c)
+ add_dependencies(mrc2smv _update_version_h)
+-target_compile_features(mrc2smv PRIVATE c_restrict cxx_constexpr)
++target_compile_features(mrc2smv PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(mrc2smv PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -446,7 +458,7 @@ add_executable(ser2smv
+   tvips.c
+   util.c)
+ add_dependencies(ser2smv _update_version_h)
+-target_compile_features(ser2smv PRIVATE c_restrict cxx_constexpr)
++target_compile_features(ser2smv PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(ser2smv PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -467,7 +479,7 @@ add_executable(tiff2smv
+   tvips.c
+   util.c)
+ add_dependencies(tiff2smv _update_version_h)
+-target_compile_features(tiff2smv PRIVATE c_restrict cxx_constexpr)
++target_compile_features(tiff2smv PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(tiff2smv PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -488,7 +500,7 @@ add_executable(tvips2smv
+   tvips2smv.c
+   util.c)
+ add_dependencies(tvips2smv _update_version_h)
+-target_compile_features(tvips2smv PRIVATE c_restrict cxx_constexpr)
++target_compile_features(tvips2smv PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+ target_include_directories(tvips2smv PRIVATE
+   "${PROJECT_BINARY_DIR}"
+   "${PROJECT_SOURCE_DIR}"
+@@ -540,7 +552,7 @@ if(BUILD_JIFFIES)
+     frame.c
+     util.c)
+   add_dependencies(cphdr _update_version_h)
+-  target_compile_features(cphdr PRIVATE c_restrict)
++  target_compile_features(cphdr PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(cphdr PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -552,7 +564,7 @@ if(BUILD_JIFFIES)
+     frame.c
+     util.c)
+   add_dependencies(dan_test _update_version_h)
+-  target_compile_features(dan_test PRIVATE c_restrict)
++  target_compile_features(dan_test PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(dan_test PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -561,7 +573,8 @@ if(BUILD_JIFFIES)
+   add_executable(fixpoint
+     compat.c
+     delta_t.cpp
+-    fixpoint.c)
++    fixpoint.c
++    util.c)
+   add_dependencies(fixpoint _update_version_h)
+   target_compile_features(fixpoint PRIVATE cxx_constexpr)
+   target_include_directories(fixpoint PRIVATE
+@@ -575,7 +588,7 @@ if(BUILD_JIFFIES)
+     img2img.c
+     util.c)
+   add_dependencies(img2img _update_version_h)
+-  target_compile_features(img2img PRIVATE c_restrict)
++  target_compile_features(img2img PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(img2img PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -587,7 +600,7 @@ if(BUILD_JIFFIES)
+     img2splot.c
+     util.c)
+   add_dependencies(img2splot _update_version_h)
+-  target_compile_features(img2splot PRIVATE c_restrict)
++  target_compile_features(img2splot PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(img2splot PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -599,7 +612,7 @@ if(BUILD_JIFFIES)
+     frame.c
+     util.c)
+   add_dependencies(imgcorr _update_version_h)
+-  target_compile_features(imgcorr PRIVATE c_restrict)
++  target_compile_features(imgcorr PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(imgcorr PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -611,7 +624,7 @@ if(BUILD_JIFFIES)
+     imgrevert.c
+     util.c)
+   add_dependencies(imgrevert _update_version_h)
+-  target_compile_features(imgrevert PRIVATE c_restrict)
++  target_compile_features(imgrevert PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(imgrevert PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -623,7 +636,7 @@ if(BUILD_JIFFIES)
+     mike_test.c
+     util.c)
+   add_dependencies(mike_test _update_version_h)
+-  target_compile_features(mike_test PRIVATE c_restrict)
++  target_compile_features(mike_test PRIVATE ${HAVE_C_RESTRICT})
+   target_include_directories(mike_test PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}")
+@@ -631,7 +644,8 @@ if(BUILD_JIFFIES)
+ 
+   add_executable(rawdump
+     compat.c
+-    rawdump.c)
++    rawdump.c
++    util.c)
+   target_include_directories(rawdump PRIVATE
+     "${PROJECT_BINARY_DIR}")
+   target_link_libraries(rawdump m)
+@@ -657,7 +671,7 @@ if(BUILD_JIFFIES)
+     tvips.c
+     util.c)
+   add_dependencies(tiff2raw _update_version_h)
+-  target_compile_features(tiff2raw PRIVATE c_restrict cxx_constexpr)
++  target_compile_features(tiff2raw PRIVATE ${HAVE_C_RESTRICT} cxx_constexpr)
+   target_include_directories(tiff2raw PRIVATE
+     "${PROJECT_BINARY_DIR}"
+     "${PROJECT_SOURCE_DIR}"
+--- tvips/compat.c.orig
++++ tvips/compat.c
+@@ -25,24 +25,86 @@
+ #    include "config.h"
+ #endif
+ 
++#include <stdlib.h>
++
+ #if !defined(HAVE_ERR) || !defined(HAVE_WARNX)
+ #    include <stdarg.h>
+ #    include <stdio.h>
+ #endif
+ 
+ #if !defined(HAVE_ERR)
+-#    include <stdlib.h>
+ #    include <errno.h>
+ #    include <string.h>
+ #endif
+ 
+ #if !defined(HAVE_GETPROGRAME) || !defined(HAVE_SETPROGNAME)
+-#    include <libgen.h>
++#    if !defined(_MSC_VER)
++#        include <libgen.h>
++#    endif
+ #    if !defined(HAVE___PROGNAME)
+ #        include <limits.h>
+ #    endif
+ #endif
+ 
++#if !defined(HAVE_GMTIME_R) || !defined(HAVE_LOCALTIME_R)
++#    include <time.h>
++#endif
++
++#if !defined(PATH_MAX) && defined(_MSC_VER)
++#    define PATH_MAX (_MAX_DIR + _MAX_DRIVE + _MAX_EXT + _MAX_FNAME)
++#endif
++
++#include "util.h"
++
++
++/* The POSIX basename(3) and dirname(3) functions return "." if @p
++ * path is @c NULL or the empty string.  These Windows implementations
++ * additionally return "."  if the underlying _splitpath() function
++ * fails, even though that should never happen.
++ */
++#if !defined(HAVE_BASENAME) && defined(_MSC_VER)
++char *
++basename(char *path)
++{
++    static char name[_MAX_FNAME + 1 + _MAX_EXT + 1];
++
++    if (path == NULL ||
++        *path == '\0' ||
++        _splitpath_s(path,
++                     NULL, 0,
++                     NULL, 0,
++                     name, _MAX_FNAME,
++                     name + _MAX_FNAME + 1, _MAX_EXT) != 0) {
++        return (".");
++    }
++    memmove(name, name + _MAX_FNAME + 1, _MAX_EXT + 1);
++
++    return (name);
++}
++#endif /* !HAVE_BASENAME && _MSC_VER */
++
++
++#if !defined(HAVE_DIRNAME) && defined(_MSC_VER)
++char *
++dirname(char *path)
++{
++    static char name[_MAX_DIR + 1 + _MAX_DRIVE + 1];
++
++    if (path == NULL ||
++        *path == '\0' ||
++        _splitpath_s(path,
++                     name, _MAX_DRIVE + 1,
++                     name + _MAX_DRIVE + 1, _MAX_DIR + 1,
++                     NULL, 0,
++                     NULL, 0) != 0) {
++        return (".");
++    }
++    memmove(name, name + _MAX_DRIVE + 1, _MAX_DIR + 1);
++
++    return (name);
++}
++#endif /* !HAVE_DIRNAME && _MSC_VER */
++
+ 
+ /* The getprogname() and setprogname() functions are used by
+  * error-reporting functions to produce consistent output.  If @c
+@@ -128,11 +190,30 @@ err(int eval, const char *fmt, ...)
+         fprintf(stderr, ": ");
+     }
+     va_end(ap);
+-    fprintf(stderr, "%s\n", strerror(errno_save));
++    errno = errno_save;
++    perror(NULL);
+     exit(eval);
+ }
+ #endif /* !HAVE_ERR */
+ 
++
++#ifndef HAVE_WARN
++void
++warn(const char *fmt, ...)
++{
++    va_list ap;
++    int errno_save;
++
++    errno_save = errno;
++    va_start(ap, fmt);
++    warnx(fmt, ap);
++    va_end(ap);
++    errno = errno_save;
++    perror(NULL);
++}
++#endif /* !HAVE_WARN */
++
++
+ #ifndef HAVE_WARNX
+ void
+ warnx(const char *fmt, ...)
+@@ -179,12 +260,8 @@ struct tm *
+ gmtime_r(const time_t *clock, struct tm *result)
+ {
+ #ifdef _WIN32
+-    struct tm *t;
+-
+-    t = gmtime(clock);
+-    if (t == NULL)
++    if (clock < 0 || gmtime_s(result, clock) != 0)
+         return (NULL);
+-    memcpy(result, t, sizeof(struct tm));
+     return (result);
+ #endif
+ }
+@@ -202,12 +279,8 @@ struct tm *
+ localtime_r(const time_t *clock, struct tm *result)
+ {
+ #ifdef _WIN32
+-    struct tm *t;
+-
+-    t = localtime(clock);
+-    if (t == NULL)
++    if (clock < 0 || localtime_s(result, clock) != 0)
+         return (NULL);
+-    memcpy(result, t, sizeof(struct tm));
+     return (result);
+ #endif
+ }
+@@ -226,8 +299,13 @@ setenv(const char *name, const char *value, int overwrite)
+     size_t len;
+     int ret;
+ 
+-    if (getenv(name) != NULL && overwrite == 0)
+-        return (0);
++    if (dupenv(name, &str) != 0)
++        return (-1);
++    if (str != NULL) {
++        free(str);
++        if (overwrite == 0)
++            return (0);
++    }
+ 
+     len = strlen(name) + 1 + strlen(value) + 1;
+     str = calloc(len, sizeof(char));
+@@ -256,3 +334,26 @@ unsetenv(const char *name)
+     return (setenv(name, "", 0));
+ }
+ #endif /* !HAVE_UNSETENV */
++
++
++/* Allocate sufficient memory for a copy of @p str, do the copy, and
++ * return a pointer to it, which may subsequently be used as an
++ * argument to free(3).  strndup() copies up to @p maxlen characters
++ * from @p str and the returned string is always NULL-terminated.  If
++ * memory allocation fails, strndup() returns @c NULL.
++ */
++#ifndef HAVE_STRNDUP
++char *
++strndup(const char *str, size_t maxlen)
++{
++    char *dst;
++    size_t len;
++
++    len = strnlen(str, maxlen);
++    dst = calloc(len + 1, sizeof(char));
++    if (dst == NULL)
++        return (NULL);
++
++    return (memcpy(dst, str, len));
++}
++#endif /* !HAVE_STRNDUP */
+--- tvips/config.h.in.orig
++++ tvips/config.h.in
+@@ -41,6 +41,14 @@
+ #define PACKAGE_USERNAME "@MICROED_TOOLS_USERNAME@"
+ 
+ 
++/* Make restrict keyword empty if the compiler does not grok it.
++ */
++#cmakedefine HAVE_C_RESTRICT
++#if !defined(HAVE_C_RESTRICT)
++#    define restrict
++#endif
++
++
+ /* Prefer the memory-model aware __atomic interface over the legacy
+  * __sync interface for atomic memory access, and fall back on a
+  * trivial but unsafe implementation.
+@@ -86,6 +94,16 @@
+ #endif
+ 
+ 
++/* Define POSIX ssize_t on Windows.  XXX This includes a file
++ * (BaseTsd.h), which is generally not great here; there are other
++ * instances of the same problem in this file.
++ */
++#if defined(_MSC_VER)
++#    include <BaseTsd.h>
++typedef SSIZE_T ssize_t;
++#endif
++
++
+ /* POSIX error numbers that are undefined on some supported systems.
+  * These constants are all defined on Linux and macOS.  They are
+  * verified not to overlap the natively defined set on Windows.
+@@ -121,10 +139,26 @@
+ #endif
+ 
+ 
++/* Declare the compatibility implementations of the POSIX basename(3)
++ * and dirname(3) functions.
++ */
++#cmakedefine HAVE_BASENAME
++#if !defined(HAVE_BASENAME)
++     char *
++     basename(char *path);
++#endif
++
++#cmakedefine HAVE_DIRNAME
++#if !defined(HAVE_DIRNAME)
++     char *
++     dirname(char *path);
++#endif
++
++
+ /* Declare the compatibility implementations of the non-standard
+- * err(3) and warnx(3) functions from <err.h>.  Potentially, libbsd
+- * could be used instead, but there does not appear to be a Conda
+- * package for it.
++ * err(3), warn(3), and warnx(3) functions from <err.h>.  Potentially,
++ * libbsd could be used instead, but there does not appear to be a
++ * Conda package for it.
+  */
+ #cmakedefine HAVE_ERR_H
+ 
+@@ -134,6 +168,12 @@
+      err(int eval, const char *fmt, ...);
+ #endif
+ 
++#cmakedefine HAVE_WARN
++#if !defined(HAVE_WARN)
++     void
++     warn(const char *fmt, ...);
++#endif
++
+ #cmakedefine HAVE_WARNX
+ #if !defined(HAVE_WARNX)
+      void
+@@ -215,6 +255,25 @@
+ #endif
+ 
+ 
++/* On Windows, use _stricmp() and _strnicmp() instead of strcasecmp(3)
++ * and strncasecmp(3).  Do not try to include <strings.h>.
++ */
++#if defined(_MSC_VER)
++#    define strcasecmp _stricmp
++#    define strncasecmp _strnicmp
++#endif
++
++
++/* Declare the compatibility implementation of strndup(3).
++ */
++#cmakedefine HAVE_STRNDUP
++#if !defined(HAVE_STRNDUP)
++#    include <stdint.h>
++     char *
++     strndup(const char *str, size_t maxlen);
++#endif
++
++
+ /* Define WORDS_BIGENDIAN on big-endian platforms
+  */
+ #cmakedefine WORDS_BIGENDIAN
+--- tvips/fixpoint.c.orig
++++ tvips/fixpoint.c
+@@ -635,7 +635,7 @@ main(int argc, char *argv[])
+     int verbose;
+ 
+ 
+-    srandom(time(NULL));
++    srand(time(NULL));
+ 
+     verbose = 1;
+ 
+--- tvips/frame.c.orig
++++ tvips/frame.c
+@@ -32,7 +32,9 @@
+ #include <math.h>
+ #include <limits.h>
+ #include <string.h>
+-#include <strings.h>
++#ifndef _MSC_VER
++#    include <strings.h>
++#endif
+ 
+ #include "frame.h"
+ #include "util.h"
+@@ -112,10 +114,19 @@ _strptime(const char *buf, struct tm *tm)
+     /* Parse day of month, hours, minutes, seconds and base-1900 year.
+      * Consume any leading and trailing white space.
+      */
+-    if (sscanf(buf, " %d %d:%d:%d %d %n",
++    if (
++#ifdef _MSC_VER
++        sscanf_s(buf, " %d %d:%d:%d %d %n",
++               &tm->tm_mday, &tm->tm_hour,
++               &tm->tm_min, &tm->tm_sec,
++               &tm->tm_year, &i) != 5 || buf[i] != '\0'
++#else
++        sscanf(buf, " %d %d:%d:%d %d %n",
+                &tm->tm_mday, &tm->tm_hour,
+                &tm->tm_min, &tm->tm_sec,
+-               &tm->tm_year, &i) != 5 || buf[i] != '\0') {
++               &tm->tm_year, &i) != 5 || buf[i] != '\0'
++#endif
++        ) {
+         return (-1);
+     }
+ 
+@@ -265,7 +276,7 @@ _element_size(const struct frame_panel *panel)
+ int
+ frame_panel_flipud(struct frame_panel *panel)
+ {
+-    void *dst;
++    uint8_t *dst;
+     size_t i, size;
+ 
+     size = _element_size(panel);
+@@ -278,7 +289,7 @@ frame_panel_flipud(struct frame_panel *panel)
+ 
+     for (i = 0; i < panel->dim[1]; i++) {
+         memcpy(dst + size * (panel->dim[0] * (panel->dim[1] - 1 - i)),
+-               panel->raster.ptr + size * panel->dim[0] * i,
++               panel->raster.uint8 + size * panel->dim[0] * i,
+                size * panel->dim[0]);
+     }
+ 
+@@ -291,7 +302,7 @@ frame_panel_flipud(struct frame_panel *panel)
+ int
+ frame_panel_rot90(struct frame_panel *panel, int k)
+ {
+-    void *dst;
++    uint8_t *dst;
+     size_t i, j, size;
+     ssize_t inc, ld, off;
+ 
+@@ -310,7 +321,7 @@ frame_panel_rot90(struct frame_panel *panel, int k)
+ 
+     case -3:
+     case +1:
+-        inc = -panel->dim[1];
++        inc = -1 * panel->dim[1];
+         ld = 1;
+         off = panel->dim[1] * (panel->dim[0] - 1);
+         break;
+@@ -318,7 +329,7 @@ frame_panel_rot90(struct frame_panel *panel, int k)
+     case -2:
+     case +2:
+         inc = -1;
+-        ld = -panel->dim[0];
++        ld = -1 * panel->dim[0];
+         off = panel->dim[0] * panel->dim[1] - 1;
+         break;
+ 
+@@ -351,7 +362,7 @@ frame_panel_rot90(struct frame_panel *panel, int k)
+     for (i = 0; i < panel->dim[1]; i++) {
+         for (j = 0; j < panel->dim[0]; j++) {
+             memcpy(dst + size * (ld * i + inc * j + off),
+-                   panel->raster.ptr + size * (panel->dim[0] * i + j),
++                   panel->raster.uint8 + size * (panel->dim[0] * i + j),
+                    size);
+         }
+     }
+@@ -379,7 +390,7 @@ frame_panel_subpanel(const struct frame_panel *panel,
+                      size_t offset_slow)
+ {
+     struct frame_panel *subpanel;
+-    void *dst, *src;
++    uint8_t *dst, *src;
+     size_t j;
+ 
+ 
+@@ -407,13 +418,13 @@ frame_panel_subpanel(const struct frame_panel *panel,
+         /* Copy a contiguous data block.  offset_fast must be zero.
+          */
+         dst = subpanel->raster.ptr;
+-        src = panel->raster.ptr + offset_slow * width * _element_size(panel);
++        src = panel->raster.uint8 + offset_slow * width * _element_size(panel);
+         memcpy(dst, src, width * height * _element_size(panel));
+     } else {
+         /* Copy row by row.
+          */
+         dst = subpanel->raster.ptr;
+-        src = panel->raster.ptr +
++        src = panel->raster.uint8 +
+             (offset_slow * panel->dim[0] + offset_fast) * _element_size(panel);
+         for (j = 0; j < width; j++) {
+             memcpy(dst, src, subpanel->dim[0] * _element_size(panel));
+@@ -458,10 +469,19 @@ frame_read(FILE *stream)
+      * octets.  Ensure the string is null-terminated to prevent
+      * overrun in the subsequent string functions.
+      */
+-    if (fscanf(stream," {\n"
++    if (
++#ifdef _MSC_VER
++        fscanf_s(stream," {\n"
++                 "%*[Hh]%*[Ee]%*[Aa]%*[Dd]%*[Ee]%*[Rr]_"
++                 "%*[Bb]%*[Yy]%*[Tt]%*[Ee]%*[Ss]"
++                 " = %zd ;\n%n", &header_bytes, &n) < 1
++#else
++        fscanf(stream," {\n"
+                "%*[Hh]%*[Ee]%*[Aa]%*[Dd]%*[Ee]%*[Rr]_"
+                "%*[Bb]%*[Yy]%*[Tt]%*[Ee]%*[Ss]"
+-               " = %zd ;\n%n", &header_bytes, &n) < 1) {
++               " = %zd ;\n%n", &header_bytes, &n) < 1
++#endif
++        ) {
+         errno = EPROTO;
+         goto exit_error;
+     }
+@@ -506,7 +526,16 @@ frame_read(FILE *stream)
+         if (sp[i] == '}')
+             break;
+ 
+-        if (sscanf(sp, " %[^=]= %[^;];\n%n", key, value, &n) < 2) {
++        if (
++#ifdef _MSC_VER
++            sscanf_s(sp, " %[^=]= %[^;];\n%n",
++                     key, (int)header_bytes + 1,
++                     value, (int)header_bytes + 1,
++                     &n) < 2
++#else
++            sscanf(sp, " %[^=]= %[^;];\n%n", key, value, &n) < 2
++#endif
++            ) {
+             errno = EPROTO;
+             goto exit_error;
+         }
+@@ -563,9 +592,17 @@ frame_read(FILE *stream)
+             }
+ 
+         } else if (strcasecmp(key, "BIN") == 0) {
+-            if (sscanf(value, "%u x %u",
++            if (
++#ifdef _MSC_VER
++                sscanf_s(value, "%u x %u",
++                         &frame->panel->binning[0],
++                         &frame->panel->binning[1]) < 2
++#else
++                sscanf(value, "%u x %u",
+                        &frame->panel->binning[0],
+-                       &frame->panel->binning[1]) < 2) {
++                       &frame->panel->binning[1]) < 2
++#endif
++                ) {
+                 errno = EPROTO;
+                 goto exit_error;
+             }
+--- tvips/mrc2smv.c.orig
++++ tvips/mrc2smv.c
+@@ -1571,9 +1571,9 @@ _mrc_readheader(FILE *stream)
+      *
+      * XXX This will not work for "old-style" MRC files.
+      */
+-    if (bcmp(header + 52, "MAP ", 4) == 0) {
++    if (memcmp(header + 52, "MAP ", 4) == 0) {
+         ;
+-    } else if (bcmp(header + 52, "\0\0\0\0", 4) == 0) {
++    } else if (memcmp(header + 52, "\0\0\0\0", 4) == 0) {
+         ;
+     } else {
+         errno = EINVAL;
+--- tvips/pysmv.pyx.orig
++++ tvips/pysmv.pyx
+@@ -33,9 +33,7 @@ from cpython.exc cimport PyErr_SetFromErrno
+ from cpython.datetime cimport datetime
+ from cpython.ref cimport PyObject
+ 
+-from posix.time cimport timespec
+ from posix.types cimport time_t
+-from posix.unistd cimport dup
+ 
+ cimport numpy as np
+ 
+@@ -44,6 +42,12 @@ cdef extern from "stdbool.h":
+     ctypedef bint bool
+ 
+ 
++cdef extern from "<time.h>":
++    cdef struct timespec:
++        time_t tv_sec
++        long tv_nsec
++
++
+ cdef extern from "numpy/arrayobject.h":
+     void PyArray_ENABLEFLAGS(np.ndarray, int)
+ 
+--- tvips/tiff.c.orig
++++ tvips/tiff.c
+@@ -36,13 +36,14 @@
+ 
+ #ifdef _WIN32
+ #    include <windows.h>
++#    include <Lmcons.h>
+ #else
+ #    include <sys/mman.h>
++#    include <sys/socket.h>
++#    include <sys/utsname.h>
+ #endif
+-#include <sys/socket.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+-#include <sys/utsname.h>
+ 
+ #include <stdlib.h>
+ 
+@@ -55,7 +56,9 @@
+ #include MICROED_TOOLS_ICONV_H
+ #include <limits.h>
+ #include <math.h>
+-#include <netdb.h>
++#ifndef _WIN32
++#    include <netdb.h>
++#endif
+ #include <pthread.h>
+ #include <string.h>
+ #include <time.h>
+@@ -1376,9 +1379,15 @@ tvips_write_tiff(const struct frame *frame,
+                  FILE *stream)
+ {
+     iconv_t cd;
++#ifdef _WIN32
++    TCHAR username[UNLEN + 1];
++    DWORD hostnamelen = 0, usernamelen = UNLEN + 1;
++#else
+     struct addrinfo hints, *res;
++    struct utsname hostname;
++    const char *username;
++#endif
+     struct tm tm;
+-    struct utsname name;
+ 
+     /* XXX Duplication w.r.t. frame_panel structure in frame.h
+      */
+@@ -1393,7 +1402,6 @@ tvips_write_tiff(const struct frame *frame,
+         void *ptr;
+     } raster;
+ 
+-    const char* login;
+     struct tvips_tiff *handle;
+     char *buf, *inbuf, *outbuf;
+     void *p;
+@@ -1704,9 +1712,14 @@ tvips_write_tiff(const struct frame *frame,
+      * TIFFTAG_ARTIST was sometimes used for that purpose) is not
+      * written by this function.
+      */
+-    login = getlogin();
+-    if (login != NULL) {
+-        if (TIFFSetField(handle->tif, TIFFTAG_ARTIST, login) == 0) {
++    if (
++#ifdef _WIN32
++        GetUserName(username, &usernamelen) != 0
++#else
++        (username = getlogin()) != NULL
++#endif
++        ) {
++        if (TIFFSetField(handle->tif, TIFFTAG_ARTIST, username) == 0) {
+             errno = EPROTO;
+             goto exit_error;
+         }
+@@ -1716,30 +1729,48 @@ tvips_write_tiff(const struct frame *frame,
+     /* The canonical name registered in DNS is in the first addrinfo
+      * structure returned returned by getaddrinfo().  This is assumed
+      * to be ASCII-encoded.  Unlike Linux, OpenBSD has an AI_FQDN flag
+-     * as well.
++     * as well.  On Windows, GetComputerNameExA() may only return the
++     * FQDN if the host is configured to use DNS names.
+      */
+-    if (uname(&name) >= 0) {
++#ifdef _WIN32
++    GetComputerNameExA(
++        ComputerNamePhysicalDnsFullyQualified, NULL, &hostnamelen);
++    p = realloc(buf, hostnamelen * sizeof(TCHAR));
++    if (p == NULL)
++        goto exit_error;
++    buf = p;
++
++    if (GetComputerNameExA(
++            ComputerNamePhysicalDnsFullyQualified, buf, &hostnamelen) != 0) {
++        if (TIFFSetField(handle->tif, TIFFTAG_HOSTCOMPUTER, buf) == 0) {
++            errno = EPROTO;
++            goto exit_error;
++        }
++    }
++#else
++    if (uname(&hostname) >= 0) {
+         memset(&hints, 0, sizeof(struct addrinfo));
+         hints.ai_family = AF_UNSPEC;
+         hints.ai_flags = AI_CANONNAME;
+ 
+-        if (getaddrinfo(name.nodename, NULL, &hints, &res) == 0) {
++        if (getaddrinfo(hostname.nodename, NULL, &hints, &res) == 0) {
+             if (TIFFSetField(handle->tif, TIFFTAG_HOSTCOMPUTER,
+                              res->ai_canonname != NULL
+                              ? res->ai_canonname
+-                             : name.nodename) == 0) {
++                             : hostname.nodename) == 0) {
+                 errno = EPROTO;
+                 goto exit_error;
+             }
+             freeaddrinfo(res);
+         } else {
+             if (TIFFSetField(handle->tif, TIFFTAG_HOSTCOMPUTER,
+-                             name.nodename) == 0) {
++                             hostname.nodename) == 0) {
+                 errno = EPROTO;
+                 goto exit_error;
+             }
+         }
+     }
++#endif
+ 
+ 
+     /* UTF-8 can generally not be represented as ASCII, which is the
+--- tvips/util.c.orig
++++ tvips/util.c
+@@ -26,7 +26,6 @@
+ #    include "version.h"
+ #endif
+ 
+-#include <sys/file.h>
+ #include <sys/stat.h>
+ 
+ #include <stdlib.h>
+@@ -35,10 +34,29 @@
+ #    include <windows.h>
+ #endif
+ 
++#ifdef _MSC_VER
++#    include <direct.h>
++#    include <fcntl.h>
++#    include <time.h>
++#    include <io.h>
++#    define mkdir _mkdir
++#    define open _open
++#    define stat _stat
++#    define tzset _tzset
++#    define umask _umask
++
++/* See
++ * https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/chmod-wchmod.
++ */
++typedef int mode_t;
++#else
++#    include <sys/file.h>
++#    include <libgen.h>
++#    include <strings.h>
++#endif
++
+ #include <errno.h>
+-#include <libgen.h>
+ #include <string.h>
+-#include <strings.h>
+ 
+ #include "util.h"
+ 
+@@ -64,7 +82,11 @@ _mkpath(char *path, mode_t mode)
+     mode_t dir_mode;
+ 
+ 
++#ifdef _MSC_VER
++    dir_mode = mode | _S_IWRITE;
++#else
+     dir_mode = mode | S_IWUSR | S_IXUSR;
++#endif
+     slash = path;
+     for ( ; ; ) {
+         /* According to
+@@ -72,7 +94,7 @@ _mkpath(char *path, mode_t mode)
+          * uses both forward and backward slash as a directory
+          * separator.
+          */
+-#ifdef __MINGW32__
++#ifdef _WIN32
+         slash += strspn(slash, "/\\");
+         slash += strcspn(slash, "/\\");
+ #else
+@@ -87,8 +109,8 @@ _mkpath(char *path, mode_t mode)
+         /* Create path with requested permissions.
+          */
+         if
+-#ifdef __MINGW32__
+-            (mkdir(path) != 0 || chmod(path, done ? mode : dir_mode) != 0)
++#ifdef _WIN32
++            (mkdir(path) != 0 || _chmod(path, done ? mode : dir_mode) != 0)
+ #else
+             (mkdir(path, done ? mode : dir_mode) != 0)
+ #endif
+@@ -100,7 +122,13 @@ _mkpath(char *path, mode_t mode)
+                 errno = errno_save;
+                 return (-1);
+             }
+-            if (!S_ISDIR(sb.st_mode)) {
++            if
++#ifdef _MSC_VER
++                ((sb.st_mode & _S_IFDIR) != _S_IFDIR)
++#else
++                (!S_ISDIR(sb.st_mode))
++#endif
++            {
+                 /* Path exists, but is not a directory.
+                  */
+                 errno = ENOTDIR;
+@@ -169,6 +197,31 @@ _template2path(char *restrict dst, const char *restrict src, size_t seqno)
+ }
+ 
+ 
++int
++dupenv(const char *name, char **value)
++{
++#ifdef _MSC_VER
++    return (_dupenv_s(value, NULL, name));
++#else
++    char *buf;
++
++    buf = getenv(name);
++    if (buf == NULL) {
++        *value = NULL;
++        return (0);
++    }
++
++    buf = strdup(buf);
++    if (buf != NULL) {
++        *value = buf;
++        return (0);
++    }
++
++    return (-1);
++#endif
++}
++
++
+ /* _mkpath() is always called, because the template may affect the
+  * directories as well as terminal files.  Because dirname(3) may
+  * wreck both its input and the output of any previous invocation,
+@@ -189,9 +242,15 @@ mkstemplate(const char *template, size_t seqno, int force)
+     if (path == NULL)
+         return (-1);
+     dir = path + len;
++#ifdef _MSC_VER
++    _umask_s(0, &mode_save);
++    mode = 0777 & ~mode_save;
++    _umask_s(mode_save, NULL);
++#else
+     mode_save = umask(0);
+     mode = 0777 & ~mode_save;
+     umask(mode_save);
++#endif
+ 
+     errno_save = errno;
+     if (_template2path(path, template, seqno) < 0) {
+@@ -200,22 +259,32 @@ mkstemplate(const char *template, size_t seqno, int force)
+     }
+     errno = errno_save;
+ 
+-    memmove(dir, dirname(strcpy(dir, path)), len * sizeof(char));
++    memmove(dir, path, len * sizeof(char));
++    memmove(dir, dirname(dir), len * sizeof(char));
+     if (_mkpath(dir, mode) != 0) {
+         free(path);
+         return (-1);
+     }
+ 
++#ifdef _WIN32
++    flags = _O_BINARY | _O_CREAT | _O_TRUNC | _O_WRONLY;
++#else
+     flags = O_WRONLY | O_CREAT | O_TRUNC;
+-#ifdef __MINGW32__
+-    flags |= _O_BINARY;
+ #endif
+ 
+     if (force != 0) {
++#ifdef _MSC_VER
++        _sopen_s(&fd, path, flags, 0, 0666 & ~mode_save);
++#else
+         fd = open(path, flags, 0666 & ~mode_save);
++#endif
+ 
+     } else {
++#ifdef _MSC_VER
++        _sopen_s(&fd, path, flags | _O_EXCL, 0, 0666 & ~mode_save);
++#else
+         fd = open(path, flags | O_EXCL, 0666 & ~mode_save);
++#endif
+         if (fd == -1 && errno == EEXIST) {
+             /* The file exists and user confirmation is required
+              * before overwriting it.  The race condition is benign
+@@ -228,7 +297,11 @@ mkstemplate(const char *template, size_t seqno, int force)
+             while (ch != '\n' && ch != EOF)
+                 ch = getchar();
+             if (cc == 'y' || cc == 'Y') {
++#ifdef _MSC_VER
++                _sopen_s(&fd, path, flags, 0, 0666 & ~mode_save);
++#else
+                 fd = open(path, flags, 0666 & ~mode_save);
++#endif
+             }
+         }
+     }
+@@ -296,19 +369,23 @@ asncatf(char **ret, size_t *size, const char *format, ...)
+ struct tm *
+ localtimez(const time_t *clock, struct tm *result)
+ {
+-    const char *zone_save;
++    char *zone_save;
+     struct tm *tm;
+     int errno_save;
+ 
+-    zone_save = getenv("TZ");
+-    if (unsetenv("TZ") != 0)
++
++    if (dupenv("TZ", &zone_save) != 0 || unsetenv("TZ") != 0) {
++        if (zone_save != NULL)
++            free(zone_save);
+         return (NULL);
++    }
+     tzset();
+ 
+     tm = localtime_r(clock, result);
+     if (zone_save != NULL) {
+         errno_save = errno;
+         setenv("TZ", zone_save, 1);
++        free(zone_save);
+         tzset();
+         if (tm == NULL)
+             errno = errno_save;
+@@ -321,24 +398,28 @@ localtimez(const time_t *clock, struct tm *result)
+ time_t
+ mktimez(struct tm *tm, const char *zone)
+ {
+-    const char *zone_save;
++    char *zone_save;
+     time_t t;
+     int errno_save;
+ 
+     if (zone == NULL || zone[0] == '\0')
+         return (mktime(tm));
+ 
+-    zone_save = getenv("TZ");
+-    if (setenv("TZ", zone, 1) != 0)
++    if (dupenv("TZ", &zone_save) != 0 || setenv("TZ", zone, 1) != 0) {
++        if (zone_save != NULL)
++            free(zone_save);
+         return (-1);
++    }
+     tzset();
+ 
+     t = mktime(tm);
+     errno_save = errno;
+-    if (zone_save != NULL)
++    if (zone_save != NULL) {
+         setenv("TZ", zone_save, 1);
+-    else
++        free(zone_save);
++    } else {
+         unsetenv("TZ");
++    }
+     tzset();
+     if (t == (time_t)-1)
+         errno = errno_save;
+--- tvips/util.h.orig
++++ tvips/util.h
+@@ -253,6 +253,10 @@ float
+ rotationratef(const struct angle_tv *base, size_t nmemb, float *error);
+ 
+ 
++int
++dupenv(const char *name, char **value);
++
++
+ /**
+  * @brief Stream open after template substitution
+  *

@@ -1,0 +1,12 @@
+Fix compilation with gcc-10; thanks to Tim Grüne.
+--- tvips/tvips.h.orig
++++ tvips/tvips.h
+@@ -112,7 +112,7 @@ enum output_format {
+      * be converted losslessly.
+      */
+     FORMAT_TIFF
+-} format;
++};
+ 
+ 
+ /**

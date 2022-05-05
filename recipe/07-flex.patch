@@ -1,0 +1,22 @@
+Explicitly set the initial state for parsers with start condition
+stacks.
+--- tvips/adoc.l.orig
++++ tvips/adoc.l
+@@ -493,6 +493,7 @@ adoc_parse(FILE *stream, const char *zone)
+     dict = root = metadata_object();
+     if (dict == NULL)
+         return (NULL);
++    yy_push_state(INITIAL, scanner);
+ 
+ #if 0
+     sections = _sections_new();
+--- tvips/fei.l.orig
++++ tvips/fei.l
+@@ -647,6 +647,7 @@ fei_parse(FILE *stream, const char *zone)
+      */
+     if (feilex_init_extra(&yylval, &scanner) != 0)
+         return (NULL);
++    yy_push_state(INITIAL, scanner);
+ 
+     dict = root = metadata_object();
+     if (dict == NULL)

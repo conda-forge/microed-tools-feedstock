@@ -1,6 +1,6 @@
 {% set name = "MicroED tools" %}
 {% set tarname = name|lower|replace(' ', '-') %}
-{% set version = "0.1.0-dev.4" %}
+{% set version = "0.1.0-dev.5" %}
 
 package:
   name: {{ tarname }}
@@ -8,23 +8,27 @@ package:
 
 source:
   url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
-  sha256: b1312f1c2a72758dafe231f4d26e3cfbf424b7e7184f3513073fda714189b7e6
+  sha256: c3ded05bc4016931eb177f40377e872b62b76b32add3446b56295a82f9f67db7
   patches:
     - 01-setenv.patch
-    - 02-version.patch
-    - 03-install.patch
-    - 04-iconv.patch
-    - 05-disable-libR.patch
-    - 06-err_h.patch
-    - 07-windows.patch
-    - 08-gcc.patch
-    - 09-cmake.patch
+    - 02-install.patch
+    - 03-iconv.patch
+    - 04-err_h.patch
+    - 05-gcc.patch
+    - 06-cmake.patch
+    - 07-flex.patch
+    - 08-cython.patch
+    - 09-msvc.patch
     - 10-warnings.patch
+    - 11-nlopt-conda.patch  # [win]
 
 build:
   ignore_run_exports_from:
     - {{ compiler('cxx') }}
   number: 0
+  run_exports:
+    - numpy
+    - python
   script_env:
     - USER      # [unix]
     - USERNAME  # [win]
@@ -34,22 +38,32 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake        >=3.15,<4
-    - coreutils                 # [unix]
-    - flex         >=2.5.34,<3  # [unix]
+    - coreutils                  # [unix]
+    - cython       >=0.27.1
+    - flex         >=2.5.34,<3   # [unix]
     - libxslt      >=0.13.0
-    - m2-coreutils              # [win]
-    - m2-flex      >=2.5.34,<3  # [win]
-    - make                      # [unix]
+    - m2-coreutils               # [win]
+    - m2-flex      >=2.5.34,<3   # [win]
+    - make                       # [unix]
+    - numpy        >=1.7,<2
+    - python       {{ python }}
   host:
-    - libiconv                     # [win]
+    - libiconv                              # [win]
     - libtiff                 4.*
-    - m2w64-libwinpthread-git      # [win]
+    - libxml2                 >=2.1,<3
+    - m2w64-libwinpthread-git               # [win]
+    - nlopt                   2.*
+    - python                  {{ python }}
   run:
     - libiconv                                        # [win]
     - {{ pin_compatible('libtiff', max_pin='x.x') }}
+    - {{ pin_compatible('libxml2', max_pin='x.x') }}
     - m2w64-libwinpthread-git                         # [win]
+    - {{ pin_compatible('nlopt', max_pin='x.x') }}
 
 test:
+  imports:
+    - pysmv
   requires:
     - coreutils                         # [unix]
     - m2-coreutils                      # [win]

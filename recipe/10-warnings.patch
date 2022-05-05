@@ -1,24 +1,92 @@
---- tvips/adoc.l.orig
-+++ tvips/adoc.l
-@@ -414,6 +414,7 @@ adoc_parse(FILE *stream, const char *zone)
-     if (adoclex_init_extra(&yylval, &scanner) != 0)
-         return (NULL);
- 
-+    item = NULL;
-     dict = root = metadata_item_new(NULL);
-     if (dict == NULL)
-         return (NULL);
 --- tvips/dan_test.c.orig
 +++ tvips/dan_test.c
 @@ -101,7 +101,7 @@ main(int argc, char *argv[])
      }
      frame_free(bkg);
  
--    fprintf(stderr, "Average intensity %zd\n", sum / (frame->panel->width * frame->panel->height));
-+    fprintf(stderr, "Average intensity %llu\n", (unsigned long long int)(sum / (frame->panel->width * frame->panel->height)));
+-    fprintf(stderr, "Average intensity %zd\n", sum / (frame->panel->dim[0] * frame->panel->dim[1]));
++    fprintf(stderr, "Average intensity %llu\n", (unsigned long long int)(sum / (frame->panel->dim[0] * frame->panel->dim[1])));
  
  
      /* Write the output file.
+--- tvips/dumpframe.c.orig
++++ tvips/dumpframe.c
+@@ -1586,7 +1586,6 @@ tvips_tiff_interpret(struct metadata_variant *root,
+                      const char *zone)
+ {
+     struct tm tm;
+-    struct timespec timestamp;
+     struct metadata_iter *iter;
+     struct metadata_variant *item, *val;
+     struct tvips_param *param, **params;
+@@ -1756,10 +1755,11 @@ tvips_tiff_interpret(struct metadata_variant *root,
+             clock = tem_date * 60 * 60 * 24 + tem_time / 100;
+             if (localtimez(&clock, &tm) == NULL)
+                 break;
+-            timestamp.tv_sec = mktimez(&tm, zone);
+-            if (timestamp.tv_sec == -1)
++            param->timestamp.tv_sec = mktimez(&tm, zone);
++            if (param->timestamp.tv_sec == -1)
+                 break;
+-            timestamp.tv_nsec = 10000000 * (tem_time - 100 * (tem_time / 100));
++            param->timestamp.tv_nsec =
++                10000000 * (tem_time - 100 * (tem_time / 100));
+             break;
+ 
+         case 2:
+@@ -1772,18 +1772,16 @@ tvips_tiff_interpret(struct metadata_variant *root,
+                 tem_time - tm.tm_hour * 60 * 60 - tm.tm_min * 60;
+             tm.tm_isdst = -1;
+ 
+-            timestamp.tv_sec = mktimez(&tm, zone);
+-            if (timestamp.tv_sec == -1)
++            param->timestamp.tv_sec = mktimez(&tm, zone);
++            if (param->timestamp.tv_sec == -1)
+                 break;
+-            timestamp.tv_nsec = 0;
++            param->timestamp.tv_nsec = 0;
+             break;
+ 
+         default:
+             // XXX
+             break;
+         }
+-
+-        param->timestamp = timestamp;
+     }
+ 
+     return (params);
+@@ -2121,6 +2119,7 @@ tvips_setfile_readmeta(size_t pathc, char *pathv[])
+         fclose(stream);
+         return (NULL);
+     }
++    lXBin = metadata_integer_value(value);
+ 
+     value = metadata_object_get_unique(root, "lYBin");
+     if (value == NULL) {
+@@ -2128,6 +2127,7 @@ tvips_setfile_readmeta(size_t pathc, char *pathv[])
+         fclose(stream);
+         return (NULL);
+     }
++    lYBin = metadata_integer_value(value);
+ 
+     if (lXBin > UINT_MAX || lYBin > UINT_MAX) {
+         metadata_variant_free(root);
+@@ -2211,10 +2211,14 @@ tvips_setfile_interpret(
+     val = metadata_object_get_unique(root, "lHT");
+     if (val != NULL)
+         wavelength = 1e10 * ht2wavelengthf(1e3 * metadata_integer_value(val));
++    else
++        wavelength = NAN;
+ 
+     val = metadata_object_get_unique(root, "lPixelSize");
+     if (val != NULL)
+         pixel_size = 1e-6 * metadata_integer_value(val);
++    else
++        pixel_size = NAN;
+ 
+     nmemb = 0;
+     params = NULL;
 --- tvips/fixpoint.c.orig
 +++ tvips/fixpoint.c
 @@ -398,8 +398,8 @@ programmatic2(const struct timespec *base, size_t nmemb)
@@ -55,7 +123,7 @@
      }
 --- tvips/frame.c.orig
 +++ tvips/frame.c
-@@ -61,10 +61,14 @@ static const char* C_wday[7] = {
+@@ -65,10 +65,14 @@ static const char* C_wday[7] = {
  static int
  _strftime(char *buf, size_t maxsize, const struct tm *tm)
  {
@@ -65,14 +133,22 @@
                       tm->tm_mday, tm->tm_hour, tm->tm_min,
                       tm->tm_sec, tm->tm_year + 1900));
 +#else
-+    return (strftime(buf, maxsize, "%a %b %e %H:%M:%S %Y", tm));
++    return ((int)strftime(buf, maxsize, "%a %b %e %H:%M:%S %Y", tm));
 +#endif
  }
  
  
+@@ -890,6 +894,7 @@ _panel_conv(uint16_t *raster,
+      * around.
+      */
+     for (i = 0; i < panel->dim[0] * panel->dim[1]; i++) {
++        val = 0;
+         switch (panel->type) {
+         case FRAME_INT8:
+             val = _cap_to_uint16(
 --- tvips/img2px.c.orig
 +++ tvips/img2px.c
-@@ -1299,6 +1299,8 @@ _histogram(struct frame *frame, size_t counter, void *data)
+@@ -1671,6 +1671,8 @@ _histogram(struct frame *frame, size_t counter, void *data)
          double stddev;
  
          mode = histogram->HHF + 1;
@@ -81,25 +157,320 @@
          for (i = histogram->HHF + 2; i < 2 * histogram->HHF; i++) {
              if (histogram->histogram[i] > histogram->histogram[mode]) {
                  mode = i;
+@@ -1796,6 +1798,7 @@ _histogram(struct frame *frame, size_t counter, void *data)
+         start_nlopt[2] = -10; // -11; // thres (tau)
+ 
+         test_cnt = test_mode = test_sum = test_ssq = 0;
++        test_v = 0;
+         H = histogram->histogram + histogram->HHF;
+         for (i = 0; i < histogram->HHF; i++) {
+             test_cnt += H[i];
+@@ -1839,12 +1842,15 @@ _histogram(struct frame *frame, size_t counter, void *data)
+             start_nlopt[2] = start_prutt[2] - 128; // thres (tau)
+         }
+ */
++        int ret;
++
+ 
+         fprintf(stderr, "**** ESTIMATED starting parameters (%zd, %zd, %f) ****\n", test_cnt, test_mode, test_v);
+         fprintf(stderr, "     mu     = %f\n", start_nlopt[0]);
+         fprintf(stderr, "     sigma  = %f\n", start_nlopt[1]);
+         fprintf(stderr, "     tau    = %f\n", start_nlopt[2]);
+ 
++        ret = 0;
+         if (test_cnt <= 0 || test_mode < 0 || test_v <= 0) {
+             fprintf(stderr, "SKIPPING refinement\n");
+ 
+@@ -1868,7 +1874,6 @@ _histogram(struct frame *frame, size_t counter, void *data)
+         nlopt_opt opt;
+         struct _histogram_nlopt mydata;
+         double maxf;
+-        int ret;
+ 
+         mydata.H = histogram->histogram + histogram->HHF;
+         mydata.I_max = histogram->HHF;
+--- tvips/metadata.c.orig
++++ tvips/metadata.c
+@@ -776,7 +776,7 @@ metadata_object_dump(FILE *stream,
+ #endif
+     }
+ 
+-    return (ret);
++    return (tot);
+ }
+ 
+ 
 --- tvips/mrc2smv.c.orig
 +++ tvips/mrc2smv.c
-@@ -1124,7 +1124,6 @@ _mrc_readfile(FILE *stream,
-     default:
-         fprintf(stderr, "Invalid floating point machine stamp\n");
-         errno = EINVAL;
--        break;
+@@ -1646,21 +1646,24 @@ _mrc_readheader(FILE *stream)
+     /* Get the number of columns (NX or NC, fast axis), rows (NY or
+      * NR, medium axis), and sections (NZ or NS, slow axis).
+      */
+-    _swabi32(&nx, header + 0, machst);
++    if (_swabi32(&nx, header + 0, machst) < 0 || nx <= 0)
++        goto exit_error;
+     value = metadata_integer(nx);
+     if (value == NULL || metadata_object_set_new(
+             object, "NX", value) == NULL) {
          goto exit_error;
      }
  
-@@ -1159,7 +1158,6 @@ _mrc_readfile(FILE *stream,
-     default:
-         fprintf(stderr, "Invalid integer machine stamp 0x%08x\n", machst);
-         errno = EINVAL;
--        break;
+-    _swabi32(&ny, header + 1, machst);
++    if (_swabi32(&ny, header + 1, machst) < 0 || ny <= 0)
++        goto exit_error;
+     value = metadata_integer(ny);
+     if (value == NULL || metadata_object_set_new(
+             object, "NY", value) == NULL) {
          goto exit_error;
      }
  
-@@ -1545,8 +1543,8 @@ _mrc_readfile(FILE *stream,
+-    _swabi32(&nz, header + 2, machst);
++    if (_swabi32(&nz, header + 2, machst) < 0 || nz <= 0)
++        goto exit_error;
+     value = metadata_integer(nz);
+     if (value == NULL || metadata_object_set_new(
+             object, "NZ", value) == NULL) {
+@@ -1670,7 +1673,8 @@ _mrc_readheader(FILE *stream)
+ 
+     /* Map mode; see _mrc_readfile() for details.
+      */
+-    _swabi32(&mode, header + 3, machst);
++    if (_swabi32(&mode, header + 3, machst) < 0)
++        goto exit_error;
+     value = metadata_integer(mode);
+     if (value == NULL || metadata_object_set_new(
+             object, "MODE", value) == NULL) {
+@@ -1682,21 +1686,24 @@ _mrc_readheader(FILE *stream)
+      * (NYSTART or NRSTART), and section (NZSTART or NSSTART) in the
+      * subimage or "unit cell".
+      */
+-    _swabi32(&nxstart, header + 4, machst);
++    if (_swabi32(&nxstart, header + 4, machst) < 0)
++        goto exit_error;
+     value = metadata_integer(nxstart);
+     if (value == NULL || metadata_object_set_new(
+             object, "NXSTART", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabi32(&nystart, header + 5, machst);
++    if (_swabi32(&nystart, header + 5, machst) < 0)
++        goto exit_error;
+     value = metadata_integer(nystart);
+     if (value == NULL || metadata_object_set_new(
+             object, "NYSTART", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabi32(&nzstart, header + 6, machst);
++    if (_swabi32(&nzstart, header + 6, machst) < 0)
++        goto exit_error;
+     value = metadata_integer(nzstart);
+     if (value == NULL || metadata_object_set_new(
+             object, "NZSTART", value) == NULL) {
+@@ -1707,21 +1714,24 @@ _mrc_readheader(FILE *stream)
+     /* Get the sampling, or the number of intervals, or the grid size,
+      * along X (MX or NX), Y (MY or NY), and Z (MZ or NZ).
+      */
+-    _swabi32(&mx, header + 7, machst);
++    if (_swabi32(&mx, header + 7, machst) < 0 || mx <= 0)
++        goto exit_error;
+     value = metadata_integer(mx);
+     if (value == NULL || metadata_object_set_new(
+             object, "MX", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabi32(&my, header + 8, machst);
++    if (_swabi32(&my, header + 8, machst) < 0 || my <= 0)
++        goto exit_error;
+     value = metadata_integer(my);
+     if (value == NULL || metadata_object_set_new(
+             object, "MY", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabi32(&mz, header + 9, machst);
++    if (_swabi32(&mz, header + 9, machst) < 0 || mz <= 0)
++        goto exit_error;
+     value = metadata_integer(mz);
+     if (value == NULL || metadata_object_set_new(
+             object, "MZ", value) == NULL) {
+@@ -1740,7 +1750,8 @@ _mrc_readheader(FILE *stream)
+         goto exit_error;
+     }
+     for (i = 0; i < 3; i++) {
+-        _swabf32(&f, header + 10 + i, machst);
++        if (_swabf32(&f, header + 10 + i, machst) < 0 || !isfinite(f))
++            goto exit_error;
+         value = metadata_real(f);
+         if (value == NULL || metadata_array_append(array, value) == NULL)
+             goto exit_error;
+@@ -1752,7 +1763,8 @@ _mrc_readheader(FILE *stream)
+         goto exit_error;
+     }
+     for (i = 0; i < 3; i++) {
+-        _swabf32(&f, header + 13 + i, machst);
++        if (_swabf32(&f, header + 13 + i, machst) < 0 || !isfinite(f))
++            goto exit_error;
+         value = metadata_real(f);
+         if (value == NULL || metadata_array_append(array, value) == NULL)
+             goto exit_error;
+@@ -1763,21 +1775,24 @@ _mrc_readheader(FILE *stream)
+      * X, Y, Z).  In IMOD, these need to be set to 1, 2, 3 for pixel
+      * spacing to interpreted correctly.
+      */
+-    _swabi32(&mapc, header + 16, machst);
++    if (_swabi32(&mapc, header + 16, machst) < 0 || mapc < 0 || mapc > 3)
++        goto exit_error;
+     value = metadata_integer(mapc);
+     if (value == NULL || metadata_object_set_new(
+             object, "MAPC", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabi32(&mapr, header + 17, machst);
++    if (_swabi32(&mapr, header + 17, machst) < 0 || mapr < 0 || mapr > 3)
++        goto exit_error;
+     value = metadata_integer(mapr);
+     if (value == NULL || metadata_object_set_new(
+             object, "MAPR", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabi32(&maps, header + 18, machst);
++    if (_swabi32(&maps, header + 18, machst) < 0 || maps < 0 || maps > 3)
++        goto exit_error;
+     value = metadata_integer(maps);
+     if (value == NULL || metadata_object_set_new(
+             object, "MAPS", value) == NULL) {
+@@ -1788,21 +1803,24 @@ _mrc_readheader(FILE *stream)
+     /* Minimum (DMIN or AMIN), maximum (DMAX or AMAX), and mean
+      * (average) density value (DMEAN or AMEAN).
+      */
+-    _swabf32(&dmin, header + 19, machst);
++    if (_swabf32(&dmin, header + 19, machst) < 0 || !isfinite(dmin))
++        goto exit_error;
+     value = metadata_real(dmin);
+     if (value == NULL || metadata_object_set_new(
+             object, "DMIN", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabf32(&dmax, header + 20, machst);
++    if (_swabf32(&dmax, header + 20, machst) < 0 || !isfinite(dmax))
++        goto exit_error;
+     value = metadata_real(dmax);
+     if (value == NULL || metadata_object_set_new(
+             object, "DMAX", value) == NULL) {
+         goto exit_error;
+     }
+ 
+-    _swabf32(&dmean, header + 21, machst);
++    if (_swabf32(&dmean, header + 21, machst) < 0 || !isfinite(dmean))
++        goto exit_error;
+     value = metadata_real(dmean);
+     if (value == NULL || metadata_object_set_new(
+             object, "DMEAN", value) == NULL) {
+@@ -1814,7 +1832,8 @@ _mrc_readheader(FILE *stream)
+      * single EM/ET volume.  By convention, for volume stacks ISPG is
+      * spacegroup number + 400.
+      */
+-    _swabi32(&ispg, header + 22, machst);
++    if (_swabi32(&ispg, header + 22, machst) < 0 || ispg < 0)
++        goto exit_error;
+     value = metadata_integer(ispg);
+     if (value == NULL || metadata_object_set_new(
+             object, "ISPG", value) == NULL) {
+@@ -1837,7 +1856,8 @@ _mrc_readheader(FILE *stream)
+      * S13, S21, etc) and skew translation, respectively, if LSKFLAG
+      * is nonzero.
+      */
+-    _swabi32(&nsymbt, header + 23, machst);
++    if (_swabi32(&nsymbt, header + 23, machst) || nsymbt < 0)
++        goto exit_error;
+     value = metadata_integer(nsymbt);
+     if (value == NULL || metadata_object_set_new(
+             object, "NSYMBT", value) == NULL) {
+@@ -1847,7 +1867,8 @@ _mrc_readheader(FILE *stream)
+ #ifdef CCP4
+     int32_t lskflag;
+ 
+-    _swabi32(&lskflag, header + 24, machst);
++    if (_swabi32(&lskflag, header + 24, machst) < 0)
++        goto exit_error;
+     value = metadata_integer(nsymbt);
+     if (value == NULL || metadata_object_set_new(
+             object, "LSKFLAG", value) == NULL) {
+@@ -1860,7 +1881,8 @@ _mrc_readheader(FILE *stream)
+         goto exit_error;
+     }
+     for (i = 0; i < 9; i++) {
+-        _swabf32(&f, header + 25 + i, machst);
++        if (_swabf32(&f, header + 25 + i, machst) < 0 || !isfinite(f))
++            goto exit_error;
+         value = metadata_real(f);
+         if (value == NULL || metadata_array_append(array, value) == NULL)
+             goto exit_error;
+@@ -1872,7 +1894,8 @@ _mrc_readheader(FILE *stream)
+         goto exit_error;
+     }
+     for (i = 0; i < 3; i++) {
+-        _swabf32(&f, header + 35 + i, machst);
++        if (_swabf32(&f, header + 35 + i, machst) || !isfinite(f))
++            goto exit_error;
+         value = metadata_real(f);
+         if (value == NULL || metadata_array_append(array, value) == NULL)
+             goto exit_error;
+@@ -1890,7 +1913,8 @@ _mrc_readheader(FILE *stream)
+     /* Format version identification number, or version of the MRC
+      * format (not in CCP4).
+      */
+-    _swabi32(&nversion, header + 27, machst);
++    if (_swabi32(&nversion, header + 27, machst) < 0)
++        goto exit_error;
+     value = metadata_integer(nversion);
+     if (value == NULL || metadata_object_set_new(
+             object, "NVERSION", value) == NULL) {
+@@ -1960,7 +1984,8 @@ _mrc_readheader(FILE *stream)
+         goto exit_error;
+     }
+     for (i = 0; i < 3; i++) {
+-        _swabf32(&f, header + 49 + i, machst);
++        if (_swabf32(&f, header + 49 + i, machst) < 0 || !isfinite(f))
++            goto exit_error;
+         value = metadata_real(f);
+         if (value == NULL || metadata_array_append(array, value) == NULL)
+             goto exit_error;
+@@ -1970,7 +1995,8 @@ _mrc_readheader(FILE *stream)
+     /* Root-mean-square deviation (RMS or ARMS) of map from mean
+      * density.  In IMOD, RMS is negative if not computed.
+      */
+-    _swabf32(&rms, header + 54, machst);
++    if (_swabf32(&rms, header + 54, machst) < 0 || !isfinite(rms))
++        goto exit_error;
+     value = metadata_real(rms);
+     if (value == NULL || metadata_object_set_new(
+             object, "RMS", value) == NULL) {
+@@ -1981,7 +2007,8 @@ _mrc_readheader(FILE *stream)
+     /* Number of used 80-character labels, no more than 10.  May be
+      * blank-padded.
+      */
+-    _swabi32(&nlabl, header + 55, machst);
++    if (_swabi32(&nlabl, header + 55, machst) < 0 || nlabl < 0)
++        goto exit_error;
+     for (i = 0; i < (nlabl <= 10 ? nlabl : 10); i++) {
+         value = metadata_strn(
+             (const char *)(header + 56 + 20 * i),
+@@ -2175,6 +2202,7 @@ _mrc_readfile(const char *path,
+ 
+ 
+     frame = NULL;
++    object = NULL;
+ 
+     stream = fopen(path, "rb");
+     if (stream == NULL)
+@@ -2485,8 +2513,8 @@ _mrc_readfile(const char *path,
  
          if (fstat(fileno(stream), &sb) != 0)
              goto exit_error;
@@ -108,11 +479,11 @@
 +        fprintf(stderr, "%lld trailing unparsed octets\n",
 +                (long long int)(sb.st_size - ftell(stream)));
      }
- #ifdef DEBUG
-     metadata_item_dump(stdout, dict, 0, 0);
+     goto exit_success;
+ 
 --- tvips/tiff.c.orig
 +++ tvips/tiff.c
-@@ -361,8 +361,8 @@ _tiff_raster(TIFF *tif, struct frame_panel *panel)
+@@ -363,8 +363,8 @@ _tiff_raster(TIFF *tif, struct frame_panel *panel)
      void *p;
      tdata_t src_data;
      tsize_t src_size;
@@ -123,7 +494,7 @@
  
  
      /* Only grayscale images are supported.  Such images have a depth
-@@ -735,7 +735,7 @@ _strptime(const char *buf, struct tm *tm)
+@@ -737,7 +737,7 @@ _strptime(const char *buf, struct tm *tm)
  ssize_t
  tvips_burst_frames(struct tvips_tiff *handle)
  {
@@ -132,7 +503,7 @@
  
      if (TIFFGetFieldDefaulted(handle->tif, TIFFTAG_IMAGELENGTH, &length) == 0 ||
          TIFFGetFieldDefaulted(handle->tif, TIFFTAG_IMAGEWIDTH, &width) == 0) {
-@@ -940,8 +940,7 @@ int
+@@ -942,8 +942,7 @@ int
  tvips_read_header(struct tvips_tiff *handle)
  {
      void *p;
@@ -142,7 +513,7 @@
  
  
      /* Get a pointer to the TemData structure using the new tag, which
-@@ -1340,29 +1339,6 @@ _cap_to_uint16(double t, size_t *oflow, size_t *uflow)
+@@ -1345,29 +1344,6 @@ _cap_to_uint16(double t, size_t *oflow, size_t *uflow)
  }
  
  
@@ -172,7 +543,7 @@
  /* XXX Misnomer: does not write the TVIPS dictionary.  Symmetry here:
   * accept a stream or a handle?  Always write MINISWHITE.
   */
-@@ -1400,8 +1376,8 @@ tvips_write_tiff(const struct frame *frame, float K, float M, FILE *stream)
+@@ -1409,8 +1385,8 @@ tvips_write_tiff(const struct frame *frame,
      time_t clock;
      tsize_t sls, ss;
      int ret;
@@ -183,7 +554,7 @@
  
  
      buf = NULL;
-@@ -1510,7 +1486,7 @@ tvips_write_tiff(const struct frame *frame, float K, float M, FILE *stream)
+@@ -1612,7 +1588,7 @@ tvips_write_tiff(const struct frame *frame,
          if (p == NULL)
              goto exit_error;
          buf = p;
@@ -194,10 +565,10 @@
  
 --- tvips/tvips.c.orig
 +++ tvips/tvips.c
-@@ -897,6 +897,7 @@ tvips_frame_write(struct frame *frame, size_t counter, void *data)
-     /* If, at this stage, the output format is still undetermined
+@@ -955,6 +955,7 @@ tvips_frame_write(struct frame *frame, size_t counter, void *data)
       * (i.e. FORMAT_DEFAULT), choose SMV for historical reasons.
       */
+     frame_warnings_init(&warnings);
 +    ret = 0;
      switch (output->format) {
      case FORMAT_CBF:
