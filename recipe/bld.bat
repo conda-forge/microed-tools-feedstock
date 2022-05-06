@@ -40,7 +40,7 @@ cmake -G "Visual Studio 15 2017 Win64"        ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% /W3"     ^
     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /W3" ^
     -DPython3_EXECUTABLE:PATH="%PYTHON%"      ^
-    "%SRC_DIR%\tvips"
+    "%SRC_DIR%"
 if errorlevel 1 exit /b 1
 
 cmake --build . --config Release --parallel "%CPU_COUNT%" --target pysmv

@@ -23,12 +23,12 @@ source:
     - 11-nlopt-conda.patch  # [win]
 
 build:
+  ignore_run_exports:
+    - numpy
+    - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}
   number: 0
-  run_exports:
-    - numpy
-    - python
   script_env:
     - USER      # [unix]
     - USERNAME  # [win]
@@ -38,21 +38,21 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake        >=3.15,<4
-    - coreutils                  # [unix]
+    - coreutils                 # [unix]
     - cython       >=0.27.1
-    - flex         >=2.5.34,<3   # [unix]
+    - flex         >=2.5.34,<3  # [unix]
     - libxslt      >=0.13.0
-    - m2-coreutils               # [win]
-    - m2-flex      >=2.5.34,<3   # [win]
-    - make                       # [unix]
-    - numpy        >=1.7,<2
-    - python       {{ python }}
+    - m2-coreutils              # [win]
+    - m2-flex      >=2.5.34,<3  # [win]
+    - make                      # [unix]
+    - pkg-config                # [unix]
   host:
     - libiconv                              # [win]
     - libtiff                 4.*
     - libxml2                 >=2.1,<3
     - m2w64-libwinpthread-git               # [win]
     - nlopt                   2.*
+    - numpy                   >=1.7,<2
     - python                  {{ python }}
   run:
     - libiconv                                        # [win]
@@ -60,6 +60,8 @@ requirements:
     - {{ pin_compatible('libxml2', max_pin='x.x') }}
     - m2w64-libwinpthread-git                         # [win]
     - {{ pin_compatible('nlopt', max_pin='x.x') }}
+    - {{ pin_compatible('numpy') }}
+    - {{ pin_compatible('python') }}
 
 test:
   imports:
