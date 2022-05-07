@@ -46,7 +46,6 @@ requirements:
     - m2-flex      >=2.5.34,<3  # [win]
     - make                      # [unix]
     - pkg-config                # [unix]
-    - vc           14.*         # [win and py>=35 and py<=310]
   host:
     - libiconv                              # [win]
     - libtiff                 4.*
