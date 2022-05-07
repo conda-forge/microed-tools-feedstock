@@ -62,7 +62,7 @@ requirements:
     - m2w64-libwinpthread-git                         # [win]
     - {{ pin_compatible('nlopt', max_pin='x.x') }}
     - {{ pin_compatible('numpy') }}
-    - {{ pin_compatible('python') }}
+    - python
 
 test:
   imports:

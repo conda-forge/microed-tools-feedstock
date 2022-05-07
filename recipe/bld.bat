@@ -35,7 +35,7 @@ if errorlevel 1 exit /b 1
 
 del CMakeCache.txt
 rd /q /s CMakeFiles
-cmake -G "Visual Studio 15 2017 Win64"        ^
+cmake -G "Visual Studio 14 2015"              ^
     -DBUILD_PYTHON_MODULE:BOOL=ON             ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% /W3"     ^
     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /W3" ^

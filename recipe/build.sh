@@ -1,13 +1,9 @@
 #! /bin/sh
 
-ls "${CONDA_BUILD_SYSROOT}"
+iconv_args="-DIconv_INCLUDE_DIR:PATH=${CONDA_BUILD_SYSROOT}/usr/include"
 if test -n "${LD_RUN_PATH}"; then
-    echo "Linux conditinal"
-    iconv_args="-DIconv_INCLUDE_DIR:PATH=${CONDA_BUILD_SYSROOT}/usr/include"
     iconv_args="${iconv_args} -DIconv_IS_BUILT_IN:BOOL=TRUE"
 elif test -n "${OSX_ARCH}"; then
-    echo "macOS conditinal"
-    iconv_args="-DIconv_INCLUDE_DIR:PATH=${CONDA_BUILD_SYSROOT}/usr/include"
     iconv_args="${iconv_args} -DIconv_LIBRARY:PATH=${CONDA_BUILD_SYSROOT}/usr/lib/libiconv.dylib"
 fi
 
