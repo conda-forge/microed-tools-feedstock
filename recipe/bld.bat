@@ -33,9 +33,10 @@ install -D -m 644                      ^
     "%PREFIX%\share\%PKG_NAME%\README"
 if errorlevel 1 exit /b 1
 
+cmake --help
 del CMakeCache.txt
 rd /q /s CMakeFiles
-cmake -G "Visual Studio 14 2015"              ^
+cmake -G "NMake Makefiles"                    ^
     -DBUILD_PYTHON_MODULE:BOOL=ON             ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% /W3"     ^
     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /W3" ^
