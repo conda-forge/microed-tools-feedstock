@@ -38,14 +38,21 @@ rem del CMakeCache.txt
 rem rd /q /s CMakeFiles
 cmake -G "NMake Makefiles"                    ^
     -DBUILD_PYTHON_MODULE:BOOL=ON             ^
+    -DCMAKE_BUILD_TYPE:STRING=Release         ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% /W3"     ^
     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /W3" ^
     -DPython3_EXECUTABLE:PATH="%PYTHON%"      ^
     "%SRC_DIR%"
 if errorlevel 1 exit /b 1
 
+echo BUILDING
 cmake --build . --config Release --parallel "%CPU_COUNT%" --target pysmv
 if errorlevel 1 exit /b 1
 
+echo CHECKING
+cmake -L -N
+if errorlevel 1 exit /b 1
+
+echo INSTALLING
 cmake --install . --component module --config Release --prefix "%SP_DIR%"
 if errorlevel 1 exit /b 1
