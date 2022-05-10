@@ -13,29 +13,29 @@ if not "%PKG_BUILDNUM%" == "0" set buildmetadata=%PKG_BUILDNUM%
     echo PACKAGE_VERSION_TWEAK=0
 ) > "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
 
-rem cmake -G "MinGW Makefiles" %CMAKE_ARGS%                               ^
-rem     -DBUILD_PYTHON_MODULE:BOOL=OFF                                    ^
-rem     -DCMAKE_C_FLAGS:STRING="%CFLAGS% -D_POSIX_C_SOURCE=200809L -Wall" ^
-rem     -DCMAKE_COLOR_MAKEFILE:BOOL=OFF                                   ^
-rem     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% -Wall"                       ^
-rem     -DNLOPT_LIBRARIES:PATH="%LIBRARY_LIB%\nlopt.lib"                  ^
-rem     "%SRC_DIR%"
-rem if errorlevel 1 exit /b 1
+cmake -G "MinGW Makefiles" %CMAKE_ARGS%                               ^
+    -DBUILD_PYTHON_MODULE:BOOL=OFF                                    ^
+    -DCMAKE_C_FLAGS:STRING="%CFLAGS% -D_POSIX_C_SOURCE=200809L -Wall" ^
+    -DCMAKE_COLOR_MAKEFILE:BOOL=OFF                                   ^
+    -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% -Wall"                       ^
+    -DNLOPT_LIBRARIES:PATH="%LIBRARY_LIB%\nlopt.lib"                  ^
+    "%SRC_DIR%"
+if errorlevel 1 exit /b 1
 
-rem cmake --build . --parallel "%CPU_COUNT%"
-rem if errorlevel 1 exit /b 1
+cmake --build . --parallel "%CPU_COUNT%"
+if errorlevel 1 exit /b 1
 
-rem cmake --install . --prefix "%PREFIX%"
-rem if errorlevel 1 exit /b 1
+cmake --install . --prefix "%PREFIX%"
+if errorlevel 1 exit /b 1
 
-rem install -D -m 644                      ^
-rem     "%SRC_DIR%\README"                 ^
-rem     "%PREFIX%\share\%PKG_NAME%\README"
-rem if errorlevel 1 exit /b 1
+install -D -m 644                      ^
+    "%SRC_DIR%\README"                 ^
+    "%PREFIX%\share\%PKG_NAME%\README"
+if errorlevel 1 exit /b 1
 
 cmake --help
-rem del CMakeCache.txt
-rem rd /q /s CMakeFiles
+del CMakeCache.txt
+rd /q /s CMakeFiles
 cmake -G "NMake Makefiles"                    ^
     -DBUILD_PYTHON_MODULE:BOOL=ON             ^
     -DCMAKE_BUILD_TYPE:STRING=Release         ^

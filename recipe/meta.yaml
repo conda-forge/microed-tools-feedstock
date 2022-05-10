@@ -44,7 +44,7 @@ requirements:
     - libxslt      >=0.13.0
     - m2-coreutils              # [win]
     - m2-flex      >=2.5.34,<3  # [win]
-#    - mw64-toolchain            # [win]
+    - m2w64-toolchain           # [win]
     - make                      # [unix]
     - pkg-config                # [unix]
   host:
