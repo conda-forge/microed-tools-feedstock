@@ -15,8 +15,10 @@ if not "%PKG_BUILDNUM%" == "0" set buildmetadata=%PKG_BUILDNUM%
 
 cmake -G "MinGW Makefiles" %CMAKE_ARGS%                               ^
     -DBUILD_PYTHON_MODULE:BOOL=OFF                                    ^
+    -DCMAKE_C_COMPILER=gcc                                            ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% -D_POSIX_C_SOURCE=200809L -Wall" ^
     -DCMAKE_COLOR_MAKEFILE:BOOL=OFF                                   ^
+    -DCMAKE_CXX_COMPILER=g++                                          ^
     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% -Wall"                       ^
     -DNLOPT_LIBRARIES:PATH="%LIBRARY_LIB%\nlopt.lib"                  ^
     "%SRC_DIR%"
