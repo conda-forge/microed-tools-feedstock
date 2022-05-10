@@ -56,3 +56,5 @@ if errorlevel 1 exit /b 1
 echo INSTALLING
 cmake --install . --component module --config Release --prefix "%SP_DIR%"
 if errorlevel 1 exit /b 1
+
+echo DONE
