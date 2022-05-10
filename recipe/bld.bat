@@ -35,7 +35,6 @@ install -D -m 644                      ^
     "%PREFIX%\share\%PKG_NAME%\README"
 if errorlevel 1 exit /b 1
 
-cmake --help
 del CMakeCache.txt
 rd /q /s CMakeFiles
 cmake -G "NMake Makefiles"                    ^
@@ -47,16 +46,8 @@ cmake -G "NMake Makefiles"                    ^
     "%SRC_DIR%"
 if errorlevel 1 exit /b 1
 
-echo BUILDING
 cmake --build . --config Release --parallel "%CPU_COUNT%" --target pysmv
 if errorlevel 1 exit /b 1
 
-echo CHECKING
-cmake -L -N
-if errorlevel 1 exit /b 1
-
-echo INSTALLING
 cmake --install . --component module --config Release --prefix "%SP_DIR%"
 if errorlevel 1 exit /b 1
-
-echo DONE
