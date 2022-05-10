@@ -1,0 +1,11 @@
+--- tvips/config.h.in.orig
++++ tvips/config.h.in
+@@ -191,7 +191,7 @@
+  */
+ #cmakedefine Iconv_IS_BUILT_IN
+ #ifdef Iconv_IS_BUILT_IN
+-#    define MICROED_TOOLS_ICONV_H <iconv.h>
++#    define MICROED_TOOLS_ICONV_H "@Iconv_INCLUDE_DIR@/iconv.h"
+ #else
+ #    define MICROED_TOOLS_ICONV_H "@Iconv_INCLUDE_DIR@/iconv.h"
+ #endif

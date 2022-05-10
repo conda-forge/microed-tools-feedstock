@@ -1,0 +1,24 @@
+This patch should only be applied to conda on Windows, because that
+configuration's NLopt package does not come with pkgconfig support.
+--- tvips/CMakeLists.txt.orig
++++ tvips/CMakeLists.txt
+@@ -86,19 +86,6 @@ if(NOT EXISTS "${LIBXSLT_XSLTPROC_EXECUTABLE}")
+ endif()
+ 
+ 
+-# The new C API was introduced in NLopt 2.0.
+-#
+-# FindPkgConfig requires CMake 3.1.  Unlike find_package(),
+-# pkg_check_modules() does not return the full path to shared
+-# libraries, so the link directories are amended instead (see
+-# https://gitlab.kitware.com/cmake/cmake/issues/15804).  Unlike
+-# pkg_check_modules(), pkg_search_module() will only return the first
+-# match, but it will not cause breakage if the module is not found: so
+-# this may break if there are many matching modules.
+-find_package(PkgConfig REQUIRED)
+-pkg_check_modules(NLOPT REQUIRED nlopt>=2.0)
+-
+-
+ # Any POSIX-compliant thread library should be fine.
+ find_package(Threads REQUIRED)
+ 
