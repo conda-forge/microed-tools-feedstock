@@ -32,7 +32,7 @@ build:
   script_env:
     - USER      # [unix]
     - USERNAME  # [win]
-  skip: True  # [py==38 and python_impl == 'pypy']
+  skip: True  # [py==39 and python_impl == 'pypy']
 
 requirements:
   build:
