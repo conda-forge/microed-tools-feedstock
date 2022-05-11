@@ -19,10 +19,11 @@ build:
     - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}
-  number: 0
+  number: 2
   script_env:
     - USER      # [unix]
     - USERNAME  # [win]
+  skip: True  # [py==39 and python_impl == 'pypy']
 
 requirements:
   build:
