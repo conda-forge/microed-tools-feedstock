@@ -1,26 +1,26 @@
 @echo off
 
-idoc2smv                                       ^
-    -f -g 5 -o "t_###.img" -r 0.09 -z EST5EDT  ^
+idoc2smv                                                 ^
+    -f -d 2640 -k 2 -m -o "t_###.img" -r 0.09 -z EST5EDT ^
     "%PREFIX%\share\microed-data\movie23.idoc"
 (
-    echo 7018e62b3e52122ae3be875642f33bad  t_001.img
+    echo 3e1e31afd68927b0ceb0c533924253af  t_001.img
 ) | sed -e "s/[[:space:]]*$//" | md5sum -c -
 if errorlevel 1 exit /b 1
 
-tiff2smv                                          ^
-    -f -g 5 -o "t_###.img" -r 0.09 -z EST5EDT     ^
+tiff2smv                                                 ^
+    -f -d 2640 -k 2 -m -o "t_###.img" -r 0.09 -z EST5EDT ^
     "%PREFIX%\share\microed-data\movie23_000.tif"
 (
-    echo 9f01e41a1e01ad59668450160c873214  t_001.img
+    echo 564befe3319bd4acc4d8ee53aaa73de7  t_001.img
 ) | sed -e "s/[[:space:]]*$//" | md5sum -c -
 if errorlevel 1 exit /b 1
 
-tvips2smv                                           ^
-    -f -g 5 -o "t_###.img" -r 0.09 -z EST5EDT       ^
+tvips2smv                                                ^
+    -f -d 2640 -k 2 -m -o "t_###.img" -r 0.09 -z EST5EDT ^
     "%PREFIX%\share\microed-data\movie23_000.tvips"
 (
-    echo 03232857ed7ce025016d94343719ac98  t_001.img
-    echo a23a49265bbca8d6996dc0e06aeb808b  t_002.img
+    echo 241fcb1756df99625d2e2e2a8599029e  t_001.img
+    echo fe6acc3c3c3701c56e27d46019038a58  t_002.img
 ) | sed -e "s/[[:space:]]*$//" | md5sum -c -
 if errorlevel 1 exit /b 1

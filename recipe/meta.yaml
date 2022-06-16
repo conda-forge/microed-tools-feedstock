@@ -1,17 +1,18 @@
 {% set name = "MicroED tools" %}
 {% set tarname = name|lower|replace(' ', '-') %}
-{% set version = "0.1.0-dev.6" %}
+{% set version = "0.1.0-dev.7" %}
 
 package:
   name: {{ tarname }}
   version: {{ version|replace('-dev.', '.dev') }}
 
 source:
-  url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
-  sha256: 66e3a59cd6afe5dad8ddfdf78773df57564c9100231f4736fb0c441a47a190b6
+  #url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
+  #sha256: 66e3a59cd6afe5dad8ddfdf78773df57564c9100231f4736fb0c441a47a190b6
+  url: https://cryoem.ucla.edu/microed-tools-jiffies-20220616.tar.gz
+  sha256: 04e8c68e65287e5f854298f90288635525dab93a6e4e6d3a54246b3c82ac492a
   patches:
-    - 01-iconv.patch
-    - 02-nlopt-conda.patch  # [win]
+    - 01-nlopt-conda.patch  # [win]
 
 build:
   ignore_run_exports:
@@ -29,32 +30,34 @@ requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - cmake           >=3.15,<4
+    - cmake          >=3.15,<4
     - coreutils                    # [unix]
-    - cython          >=0.27.1
-    - flex            >=2.5.34,<3  # [unix]
-    - libxslt         >=0.13.0
+    - cython         >=0.27.1
+    - flex           >=2.5.34,<3   # [unix]
+    - libxslt        >=0.13.0
     - m2-coreutils                 # [win]
-    - m2-flex         >=2.5.34,<3  # [win]
-    - m2w64-toolchain              # [win]
+    - m2-sed                       # [win]
     - make                         # [unix]
-    - pandoc          2.*
+    - pandoc         2.*
     - pkg-config                   # [unix]
+    - winflexbison   >=2.2,<3      # [win]
   host:
-    - libiconv                              # [win]
-    - libtiff                 4.*
-    - libxml2                 >=2.1,<3
-    - m2w64-libwinpthread-git               # [win]
-    - nlopt                   2.*
-    - numpy                   >=1.7,<2
-    - python                  {{ python }}
+    - libarchive     >=2.8.0,<4
+    - libiconv                     # [win]
+    - libtiff        4.*
+    - libxml2        >=2.1,<3
+    - nlopt          2.*
+    - numpy          >=1.7,<2
+    - pthreads-win32               # [win]
+    - python         {{ python }}
   run:
+    - libarchive
     - libiconv                                        # [win]
     - {{ pin_compatible('libtiff', max_pin='x.x') }}
     - {{ pin_compatible('libxml2', max_pin='x.x') }}
-    - m2w64-libwinpthread-git                         # [win]
     - {{ pin_compatible('nlopt', max_pin='x.x') }}
     - {{ pin_compatible('numpy') }}
+    - pthreads-win32                                  # [win]
     - python
 
 test:
@@ -69,7 +72,7 @@ test:
 about:
   home: https://cryoem.ucla.edu/microed
   license: ISC
-  license_file: LICENSE.md
+  license_file: LICENSE
   summary: "Convert electron diffraction images to SMV format"
   description: |
     The MicroED tools convert sequences of related electron
