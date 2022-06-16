@@ -6,6 +6,8 @@ channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
 - vs2017
+libarchive:
+- '3.5'
 libiconv:
 - '1.16'
 numpy:
