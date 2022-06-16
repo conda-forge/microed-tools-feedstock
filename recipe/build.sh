@@ -20,7 +20,7 @@ cmake ${CMAKE_ARGS} ${iconv_args}                \
     -DPython3_EXECUTABLE:PATH="${PYTHON}"        \
     "${SRC_DIR}"
 
-cmake --build . --parallel "${CPU_COUNT}"
+cmake --build .
 cmake --install . --prefix "${PREFIX}"
 
 src/tiff2smv -V
