@@ -52,12 +52,12 @@ requirements:
     - python         {{ python }}
   run:
     - libarchive
-    - libiconv                                        # [win]
-    - {{ pin_compatible('libtiff', max_pin='x.x') }}
-    - {{ pin_compatible('libxml2', max_pin='x.x') }}
-    - {{ pin_compatible('nlopt', max_pin='x.x') }}
-    - {{ pin_compatible('numpy') }}
-    - pthreads-win32                                  # [win]
+    - libiconv                     # [win]
+    - libtiff
+    - libxml2
+    - nlopt
+    - numpy
+    - pthreads-win32               # [win]
     - python
 
 test:

@@ -3,7 +3,6 @@
 if not "%PKG_BUILDNUM%" == "0" sed                                        ^
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1%PKG_BUILDNUM%:" ^
     -i "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
-type "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
 
 cmake %CMAKE_ARGS%                                            ^
     -DBUILD_PYTHON_MODULE:BOOL=ON                             ^
@@ -21,5 +20,3 @@ if errorlevel 1 exit /b 1
 
 cmake --install . --config Release --prefix "%PREFIX%"
 if errorlevel 1 exit /b 1
-
-src\Release\tiff2smv -V
