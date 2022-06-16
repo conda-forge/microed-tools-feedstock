@@ -19,12 +19,12 @@ build:
     - numpy
     - python
   ignore_run_exports_from:
-    - {{ compiler('cxx') }}
+    - {{ compiler('cxx') }}  # [not osx]
   number: 0
   script_env:
-    - USER      # [unix]
-    - USERNAME  # [win]
-  skip: True  # [py==39 and python_impl == 'pypy']
+    - USER                   # [unix]
+    - USERNAME               # [win]
+  skip: True                 # [py==39 and python_impl == 'pypy']
 
 requirements:
   build:
