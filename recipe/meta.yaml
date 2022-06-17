@@ -9,8 +9,8 @@ package:
 source:
   #url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
   #sha256: 66e3a59cd6afe5dad8ddfdf78773df57564c9100231f4736fb0c441a47a190b6
-  url: https://cryoem.ucla.edu/microed-tools-jiffies-20220616.tar.gz
-  sha256: 04e8c68e65287e5f854298f90288635525dab93a6e4e6d3a54246b3c82ac492a
+  url: https://cryoem.ucla.edu/microed-tools-jiffies-20220617.tar.gz
+  sha256: 15da40f94d339059bd755ef5011f3d479e9685be95e0052e8977d6e6555886b2
   patches:
     - 01-nlopt-conda.patch  # [win]
 
