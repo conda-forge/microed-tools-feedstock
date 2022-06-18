@@ -10,11 +10,23 @@ libarchive:
 - '3.5'
 libiconv:
 - '1.16'
+libtiff:
+- '4'
+libxml2:
+- '2.9'
+nlopt:
+- '2.7'
 numpy:
 - '1.19'
 pin_run_as_build:
   libiconv:
     max_pin: x.x
+  libtiff:
+    max_pin: x
+  libxml2:
+    max_pin: x.x
+  nlopt:
+    max_pin: x.x.x
   python:
     min_pin: x.x
     max_pin: x.x
