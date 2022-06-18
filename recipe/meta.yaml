@@ -7,10 +7,8 @@ package:
   version: {{ version|replace('-dev.', '.dev') }}
 
 source:
-  #url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
-  #sha256: 66e3a59cd6afe5dad8ddfdf78773df57564c9100231f4736fb0c441a47a190b6
-  url: https://cryoem.ucla.edu/microed-tools-jiffies-20220617.tar.gz
-  sha256: 15da40f94d339059bd755ef5011f3d479e9685be95e0052e8977d6e6555886b2
+  url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
+  sha256: 1f8a603a3f805a77f5c167f02422dde3a62afa51014ae346e4d473e21480a0fd
   patches:
     - 01-nlopt-conda.patch  # [win]
 
