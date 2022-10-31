@@ -19,18 +19,12 @@ libarchive:
 libtiff:
 - '4'
 libxml2:
-- '2.9'
+- '2.10'
 nlopt:
 - '2.7'
 numpy:
 - '1.21'
 pin_run_as_build:
-  libtiff:
-    max_pin: x
-  libxml2:
-    max_pin: x.x
-  nlopt:
-    max_pin: x.x.x
   python:
     min_pin: x.x
     max_pin: x.x

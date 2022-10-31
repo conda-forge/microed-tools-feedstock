@@ -5,7 +5,7 @@ MACOSX_SDK_VERSION:
 c_compiler:
 - clang
 c_compiler_version:
-- '13'
+- '14'
 channel_sources:
 - conda-forge/label/microed-data_dev,conda-forge
 channel_targets:
@@ -13,13 +13,13 @@ channel_targets:
 cxx_compiler:
 - clangxx
 cxx_compiler_version:
-- '13'
+- '14'
 libarchive:
 - '3.5'
 libtiff:
 - '4'
 libxml2:
-- '2.9'
+- '2.10'
 macos_machine:
 - x86_64-apple-darwin13.4.0
 nlopt:
@@ -27,12 +27,6 @@ nlopt:
 numpy:
 - '1.21'
 pin_run_as_build:
-  libtiff:
-    max_pin: x
-  libxml2:
-    max_pin: x.x
-  nlopt:
-    max_pin: x.x.x
   python:
     min_pin: x.x
     max_pin: x.x
