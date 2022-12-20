@@ -1,39 +1,31 @@
 c_compiler:
-- vs2017
+- vs2019
 channel_sources:
 - conda-forge/label/microed-data_dev,conda-forge
 channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
-- vs2017
+- vs2019
 libarchive:
 - '3.5'
 libiconv:
-- '1.16'
+- '1'
 libtiff:
-- '4'
+- '4.5'
 libxml2:
-- '2.9'
+- '2.10'
 nlopt:
 - '2.7'
 numpy:
-- '1.19'
+- '1.20'
 pin_run_as_build:
-  libiconv:
-    max_pin: x.x
-  libtiff:
-    max_pin: x
-  libxml2:
-    max_pin: x.x
-  nlopt:
-    max_pin: x.x.x
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.9.* *_cpython
+- 3.8.* *_73_pypy
 python_impl:
-- cpython
+- pypy
 target_platform:
 - win-64
 zip_keys:
