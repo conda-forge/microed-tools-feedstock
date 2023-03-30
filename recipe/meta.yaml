@@ -11,7 +11,7 @@ source:
   sha256: 1f8a603a3f805a77f5c167f02422dde3a62afa51014ae346e4d473e21480a0fd
   patches:
     - 01-nlopt-conda.patch  # [win]
-    - 02-docbook.patch
+    - 02-docbook-cdn.patch
 
 build:
   ignore_run_exports:
