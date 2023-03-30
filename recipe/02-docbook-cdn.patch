@@ -1,0 +1,23 @@
+Use DocBook XSL CDN, introduced with docbook-xsl 1.79.2.
+--- doc/CMakeLists.txt.orig
++++ doc/CMakeLists.txt
+@@ -18,18 +18,12 @@
+ # The --output option to xsltproc was added in libxslt 0.13.0.  XXX
+ # Really, only xsltproc is needed, but it seems difficult to make that
+ # work with find_package()'s COMPONENTS below.
+-#
+-# XXX Migrate to cdn.docbook.org!  Also, sort out the version we
+-# actually need!  See failures when building with conda here!
+-#
+-# XXX This has xsl-ns/current hardcoded.  Will that always be
+-# appropriate?
+ if(BUILD_HTML OR BUILD_MAN OR BUILD_PDF)
+   find_package(LibXslt 0.13.0)
+   if(NOT EXISTS "${LIBXSLT_XSLTPROC_EXECUTABLE}")
+     message(SEND_ERROR "xsltproc NOT found")
+   endif()
+-  set(xml_ns "http://docbook.sourceforge.net/release/xsl-ns/current")
++  set(xml_ns "http://cdn.docbook.org/release/xsl/current")
+ endif()
+ 
+ 
