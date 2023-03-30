@@ -15,12 +15,15 @@ which test
 ls "${SRC_DIR}"
 cat "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
+test "${PKG_BUILDNUM}" != "0" && echo "TEST OK"
+
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
-    -i "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
+    -i.bak "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
 echo "SED OK"
-test "${PKG_BUILDNUM}" != "0" && echo "TEST OK"
+cat "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE.bak"
+cat "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
 cmake ${CMAKE_ARGS} ${iconv_args}                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                \
