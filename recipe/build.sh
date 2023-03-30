@@ -8,22 +8,9 @@ else
     iconv_args="${iconv_args} -DIconv_IS_BUILT_IN:BOOL=TRUE"
 fi
 
-echo "PKG_BUILDNUM: ${PKG_BUILDNUM}"
-echo "SRC_DIR:      ${SRC_DIR}"
-which sed
-which test
-ls "${SRC_DIR}"
-cat "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
-
-test "${PKG_BUILDNUM}" != "0" && echo "TEST OK"
-
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
     -i.bak "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
-
-echo "SED OK"
-cat "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE.bak"
-cat "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
 cmake ${CMAKE_ARGS} ${iconv_args}                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                \
