@@ -17,7 +17,7 @@ docker_image:
 libarchive:
 - '3.6'
 libtiff:
-- '4.4'
+- '4.5'
 libxml2:
 - '2.10'
 nlopt:
