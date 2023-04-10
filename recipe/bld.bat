@@ -4,10 +4,6 @@ if not "%PKG_BUILDNUM%" == "0" sed                                        ^
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1%PKG_BUILDNUM%:" ^
     -i "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
 
-
-:: This should not be necessary.
-set XML_CATALOG_FILES=%CONDA_PREFIX%\share\docbook-xsl\catalog.xml
-
 cmake %CMAKE_ARGS%                                            ^
     -DBUILD_PYTHON_MODULE:BOOL=ON                             ^
     -DCMAKE_BUILD_TYPE:STRING=Release                         ^
