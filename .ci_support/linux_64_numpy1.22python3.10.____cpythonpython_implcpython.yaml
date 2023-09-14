@@ -15,7 +15,7 @@ cxx_compiler_version:
 docker_image:
 - quay.io/condaforge/linux-anvil-cos7-x86_64
 libarchive:
-- '3.6'
+- '3.7'
 libtiff:
 - '4.5'
 libxml2:
@@ -23,7 +23,7 @@ libxml2:
 nlopt:
 - '2.7'
 numpy:
-- '1.21'
+- '1.22'
 pin_run_as_build:
   python:
     min_pin: x.x
