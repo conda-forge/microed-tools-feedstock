@@ -17,7 +17,7 @@ cxx_compiler_version:
 libarchive:
 - '3.6'
 libtiff:
-- '4.5'
+- '4.6'
 libxml2:
 - '2.11'
 macos_machine:
