@@ -19,7 +19,7 @@ build:
     - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [not osx]
-  number: 3
+  number: 4
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
