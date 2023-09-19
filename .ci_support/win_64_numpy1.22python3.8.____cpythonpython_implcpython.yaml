@@ -11,7 +11,7 @@ libarchive:
 libiconv:
 - '1'
 libtiff:
-- '4.5'
+- '4.6'
 libxml2:
 - '2.11'
 nlopt:
