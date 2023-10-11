@@ -6,7 +6,7 @@ if not "%PKG_BUILDNUM%" == "0" sed                                        ^
 
 
 :: This should not be necessary.
-set XML_CATALOG_FILES=%CONDA_PREFIX%\share\docbook-xsl\catalog.xml
+::set XML_CATALOG_FILES=%CONDA_PREFIX%\share\docbook-xsl\catalog.xml
 
 cmake %CMAKE_ARGS%                                            ^
     -DBUILD_PYTHON_MODULE:BOOL=ON                             ^
