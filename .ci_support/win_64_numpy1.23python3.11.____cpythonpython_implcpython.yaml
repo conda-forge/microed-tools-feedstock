@@ -7,13 +7,13 @@ channel_targets:
 cxx_compiler:
 - vs2019
 libarchive:
-- '3.6'
+- '3.7'
 libiconv:
 - '1'
 libtiff:
-- '4.4'
+- '4.6'
 libxml2:
-- '2.10'
+- '2.11'
 nlopt:
 - '2.7'
 numpy:
