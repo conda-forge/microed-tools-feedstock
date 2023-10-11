@@ -2,7 +2,7 @@
 
 if not "%PKG_BUILDNUM%" == "0" sed                                        ^
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1%PKG_BUILDNUM%:" ^
-    -i "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
+    -i.bak "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
 
 
 :: This should not be necessary.
