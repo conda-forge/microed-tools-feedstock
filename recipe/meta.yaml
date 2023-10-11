@@ -40,6 +40,10 @@ requirements:
     - make                         # [unix]
     - pandoc         2.*
     - pkg-config                   # [unix]
+    - python                              # [build_platform != target_platform]
+    - cross-python_{{ target_platform }}  # [build_platform != target_platform]
+    #- cython                              # [build_platform != target_platform]
+    - numpy                               # [build_platform != target_platform]
     - winflexbison   >=2.2,<3      # [win]
   host:
     - libarchive     >=2.8.0,<4
