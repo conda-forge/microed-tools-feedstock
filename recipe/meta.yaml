@@ -32,7 +32,6 @@ requirements:
     - cmake          >=3.15,<4
     - coreutils                    # [unix]
     - docbook-xsl
-    - cython         >=0.27.1
     - flex           >=2.5.34,<3   # [unix]
     - libxslt        >=0.13.0
     - m2-coreutils                 # [win]
@@ -42,10 +41,11 @@ requirements:
     - pkg-config                   # [unix]
     - python                              # [build_platform != target_platform]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    #- cython                              # [build_platform != target_platform]
+    - cython                              # [build_platform != target_platform]
     - numpy                               # [build_platform != target_platform]
     - winflexbison   >=2.2,<3      # [win]
   host:
+    - cython         >=0.27.1
     - libarchive     >=2.8.0,<4
     - libiconv                     # [win]
     - libtiff        4.*
