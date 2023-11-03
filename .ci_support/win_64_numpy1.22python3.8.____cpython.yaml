@@ -6,6 +6,8 @@ channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
 - vs2019
+fftw:
+- '3'
 libarchive:
 - '3.7'
 libiconv:
@@ -23,12 +25,9 @@ pin_run_as_build:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.9.* *_cpython
-python_impl:
-- cpython
+- 3.8.* *_cpython
 target_platform:
 - win-64
 zip_keys:
 - - python
   - numpy
-  - python_impl
