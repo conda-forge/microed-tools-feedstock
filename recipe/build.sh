@@ -13,6 +13,7 @@ test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -i.bak "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
 cmake ${CMAKE_ARGS} ${iconv_args}                \
+    -DBUILD_JIFFIES:BOOL=ON                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                \
     -DCMAKE_C_FLAGS:STRING="${CFLAGS} -Wall"     \
     -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} -Wall" \
@@ -21,3 +22,14 @@ cmake ${CMAKE_ARGS} ${iconv_args}                \
 
 cmake --build .
 cmake --install . --prefix "${PREFIX}"
+
+mkdir -p "${PREFIX}/share/man/man1"
+mv "${PREFIX}/share/man/"*.1 "${PREFIX}/share/man/man1"
+
+mkdir -p "${PREFIX}/share/man/man5"
+mv "${PREFIX}/share/man/"*.5 "${PREFIX}/share/man/man5"
+
+mkdir -p "${PREFIX}/share/${PKG_NAME}"
+mv "${PREFIX}/share/doc/LICENSE" \
+    "${PREFIX}/share/doc/README" \
+    "${PREFIX}/share/${PKG_NAME}"

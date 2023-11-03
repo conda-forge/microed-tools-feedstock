@@ -1,0 +1,48 @@
+Should not be necessary once NLopt 2.7.2 (or whatever comes after
+2.7.1) hits conda-forge.  The Windows build will then also need to
+depend on pkg-config.
+--- src/CMakeLists.txt.orig
++++ src/CMakeLists.txt
+@@ -71,26 +71,6 @@
+ endif()
+ 
+ 
+-# The new C API was introduced in NLopt 2.0.
+-#
+-# FindPkgConfig requires CMake 3.1.  Unlike find_package(),
+-# pkg_check_modules() does not return the full path to shared
+-# libraries, so the link directories are amended instead (see
+-# https://gitlab.kitware.com/cmake/cmake/issues/15804).  Unlike
+-# pkg_check_modules(), pkg_search_module() will only return the first
+-# match, but it will not cause breakage if the module is not found: so
+-# this may break if there are many matching modules.
+-#
+-# Current NLopt does not provide a pkg-config file on Windows.  Hence,
+-# building on Windows will fail unless this is reverted.  This should
+-# be fixed in the next version of NLopt (2.7.2, or whatever comes
+-# after 2.7.1 from 2021-12-03 and includes
+-# https://github.com/stevengj/nlopt/pull/534).  XXX Should note this
+-# in README.md once that release is out.
+-find_package(PkgConfig REQUIRED)
+-pkg_check_modules(NLopt REQUIRED IMPORTED_TARGET nlopt>=2.0)
+-
+-
+ # Any POSIX-compliant thread library should be fine.
+ #
+ # XXX Wasteful: not all targets need threads.  See
+@@ -493,13 +473,13 @@
+   INTERFACE Iconv::Iconv
+   INTERFACE LibArchive::LibArchive
+   INTERFACE LibXml2::LibXml2
+-  INTERFACE PkgConfig::NLopt
++  "${NLOPT_INCLUDE_DIRS}"
+   INTERFACE TIFF::TIFF)
+ target_link_libraries(img2px
+   Iconv::Iconv
+   LibArchive::LibArchive
+   LibXml2::LibXml2
+-  PkgConfig::NLopt
++  "${NLOPT_LIBRARIES}"
+   TIFF::TIFF)
+ if(NOT HAVE_GETOPT_LONG)
+   target_sources(img2px PRIVATE "getopt_long.c")
