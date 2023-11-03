@@ -5,8 +5,8 @@ if test -n "${LD_RUN_PATH}"; then
     iconv_args="${iconv_args} -DIconv_IS_BUILT_IN:BOOL=TRUE"
 elif test -n "${OSX_ARCH}"; then
     CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-    major=`echo "${MACOSX_DEPLOYMENT_TARGET}" | sed -e "s/^\([0-9]*\).*/\1/"`
-    minor=`echo "${MACOSX_DEPLOYMENT_TARGET}" | sed -e "s/^[0-9]*\.\([0-9]*\).*/\1/"`
+    major=`echo "${MACOSX_SDK_VERSION}" | sed -e "s/^\([0-9]*\).*/\1/"`
+    minor=`echo "${MACOSX_SDK_VERSION}" | sed -e "s/^[0-9]*\.\([0-9]*\).*/\1/"`
     if test "${major}" -gt "10" -o \( "${major}" -eq "10" -a "${minor}" -ge "11" \); then
         libiconv="libiconv.tbd"
     else
