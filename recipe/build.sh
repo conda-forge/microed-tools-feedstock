@@ -18,9 +18,9 @@ elif test -n "${OSX_ARCH}"; then
     iconv_args="${iconv_args} -DIconv_LIBRARY:PATH=${CONDA_BUILD_SYSROOT}/usr/lib/${libiconv}"
 fi
 
-test "${CONDA_BUILD_CROSS_COMPILATION}" = "1" &&               \
+test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&               \
     numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/core/include"
-echo "HAVE '${CONDA_BUILD_CROSS_COMPILATION}' and '${numpy_args}'"
+echo "HAVE '${CONDA_BUILD_CROSS_COMPILATION}' and '${numpy_args}' and '${iconv_args}'"
 
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \

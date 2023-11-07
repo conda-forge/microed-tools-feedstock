@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://cryoem.ucla.edu/microed-tools-jiffies-20231107.tar.gz
-  sha256: 867d7e27d06e09f095b353d2ef29257ab0fb0281018eb2a40ef18d4f4e563614
+  sha256: 40f1d1eaf5bfc20cacb54c358b087eaaa6a51091d1508548ac0e204df0c1dd17
   patches:
     - 01-nlopt-win.patch  # [win]
 
@@ -17,7 +17,7 @@ build:
     - numpy
     - python
   ignore_run_exports_from:
-    - {{ compiler('cxx') }}  # [not osx]
+    - {{ compiler('cxx') }}  # [not unix]
   number: 0
   script_env:
     - USER                   # [unix]
