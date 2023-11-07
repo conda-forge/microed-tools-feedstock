@@ -26,6 +26,7 @@ cmake ${CMAKE_ARGS} ${iconv_args}                \
     -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} -Wall" \
     -DPython3_EXECUTABLE:PATH="${PYTHON}"        \
     -DPython3_NumPy_INCLUDE_DIR:PATH="${SP_DIR}/numpy/core/include" \
+    -DPython3_NumPy_VERSION:STRING="${NPY_VER}" \
     "${SRC_DIR}"
 
 cmake --build .
