@@ -4,7 +4,6 @@ iconv_args="-DIconv_INCLUDE_DIR:PATH=${CONDA_BUILD_SYSROOT}/usr/include"
 if test -n "${LD_RUN_PATH}"; then
     iconv_args="${iconv_args} -DIconv_IS_BUILT_IN:BOOL=TRUE"
 elif test -n "${OSX_ARCH}"; then
-    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
     echo "Have '${MACOSX_SDK_VERSION}' and '${MACOSX_DEPLOYMENT_TARGET}' and '${CONDA_BUILD_SYSROOT}'"
     major=`echo "${MACOSX_DEPLOYMENT_TARGET}" | sed -e "s/^\([0-9]*\).*/\1/"`
     minor=`echo "${MACOSX_DEPLOYMENT_TARGET}" | sed -e "s/^[0-9]*\.\([0-9]*\).*/\1/"`
