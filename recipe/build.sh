@@ -9,6 +9,10 @@ elif test -n "${OSX_ARCH}"; then
     minor=`echo "${MACOSX_DEPLOYMENT_TARGET}" | sed -e "s/^[0-9]*\.\([0-9]*\).*/\1/"`
     echo "Got major='${major}'"
     echo "Got minor='${minor}'"
+    if test "${major}" -le "10" -o \( \
+            "${major}" -eq "10" -a "${minor}" -lt "14" \); then
+	CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    fi
     if test "${major}" -gt "10" -o \( "${major}" -eq "10" -a "${minor}" -ge "11" \); then
         libiconv="libiconv.tbd"
     else
