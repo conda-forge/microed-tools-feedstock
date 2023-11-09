@@ -5,11 +5,10 @@ if not "%PKG_BUILDNUM%" == "0" sed                                        ^
     -i.bak "%SRC_DIR%\MICROED-TOOLS-VERSION-FILE"
 
 cmake %CMAKE_ARGS%                                            ^
-    -DBUILD_JIFFIES:BOOL=ON                             ^
     -DBUILD_PYTHON_MODULE:BOOL=ON                             ^
     -DCMAKE_BUILD_TYPE:STRING=Release                         ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% /W3"                     ^
-    -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /EHsc /W3"                 ^
+    -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /EHsc /W3"           ^
     -DNLOPT_LIBRARIES:PATH="%LIBRARY_LIB%\nlopt.lib"          ^
     -DPython3_EXECUTABLE:PATH="%PYTHON%"                      ^
     "%SRC_DIR%"

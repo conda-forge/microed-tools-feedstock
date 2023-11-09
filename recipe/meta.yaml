@@ -22,7 +22,6 @@ build:
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
-  #skip: True                 # [py==39 and python_impl == 'pypy']
 
 requirements:
   build:
@@ -45,24 +44,20 @@ requirements:
     - winflexbison   >=2.2,<3             # [win]
   host:
     - cython         >=0.27.1
-    - fftw
     - libarchive     >=3.0.2,<4
     - libiconv                            # [win]
     - libtiff        >=4.5,<5
     - libxml2        >=2.1,<3
     - nlopt          2.*
     - numpy          >=1.7,<2
-    #- pthreads-win32                      # [win]
     - python         {{ python }}
   run:
-    - fftw
     - libarchive
     - libiconv                            # [win]
     - libtiff
     - libxml2
     - nlopt
     - numpy
-    #- pthreads-win32                      # [win]
     - python
 
 test:
