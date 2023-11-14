@@ -1,9 +1,9 @@
 Should not be necessary once NLopt 2.7.2 (or whatever comes after
 2.7.1) hits conda-forge.  The Windows build will then also need to
 depend on pkg-config.
---- src/CMakeLists.txt.orig
-+++ src/CMakeLists.txt
-@@ -71,26 +71,6 @@
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -73,26 +73,6 @@ if(LibXml2_NEEDS_ZLIB)
  endif()
  
  
@@ -30,13 +30,13 @@ depend on pkg-config.
  # Any POSIX-compliant thread library should be fine.
  #
  # XXX Wasteful: not all targets need threads.  See
-@@ -465,13 +445,13 @@
-   INTERFACE Iconv::Iconv
-   INTERFACE LibArchive::LibArchive
-   INTERFACE LibXml2::LibXml2
--  INTERFACE PkgConfig::NLopt
-+  "${NLOPT_INCLUDE_DIRS}"
-   INTERFACE TIFF::TIFF)
+@@ -451,12 +431,13 @@ add_executable(img2px
+ add_dependencies(img2px version_h)
+ target_include_directories(img2px PRIVATE
+   "${CMAKE_CURRENT_SOURCE_DIR}"
+-  "${PROJECT_BINARY_DIR}")
++  "${PROJECT_BINARY_DIR}"
++  "${NLOPT_INCLUDE_DIRS}")
  target_link_libraries(img2px
    Iconv::Iconv
    LibArchive::LibArchive
