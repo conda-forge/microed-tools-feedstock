@@ -18,7 +18,7 @@ build:
     - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
-  number: 0
+  number: 1
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
@@ -67,7 +67,7 @@ test:
     - coreutils                         # [unix]
     - m2-coreutils                      # [win]
     - m2-sed                            # [win]
-    - microed-data >=0.1.0.dev4,<0.2.0
+    - microed-data >=0.1.0.dev8,<0.2.0
 
 about:
   home: https://cryoem.ucla.edu/microed

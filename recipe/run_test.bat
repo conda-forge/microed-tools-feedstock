@@ -5,7 +5,7 @@ idoc2smv                                                   ^
     "%PREFIX%\share\microed-data\movie23.idoc"             ^
     "%PREFIX%\share\microed-data\movie23_000.tif"
 (
-    echo 9bbfa871388df4ec300a2c6b30a2e3ea  t_001.img
+    echo 61220847e866ac7b9ffe90cc83120918  t_001.img
 ) | sed -e "s/[[:space:]]*$//" | md5sum -c -
 if errorlevel 1 exit /b 1
 

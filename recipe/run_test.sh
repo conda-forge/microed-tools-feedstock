@@ -5,7 +5,7 @@ idoc2smv                                                   \
     "${PREFIX}/share/microed-data/movie23.idoc"            \
     "${PREFIX}/share/microed-data/movie23_000.tif"
 cat << EOF | md5sum -c -
-9bbfa871388df4ec300a2c6b30a2e3ea  t_001.img
+61220847e866ac7b9ffe90cc83120918  t_001.img
 EOF
 
 tiff2smv                                                   \
