@@ -11,6 +11,7 @@ source:
   sha256: 5fe6677f5d1f5eedfd50b8436b4c36918d1d7d4f1ad3da28b71a132ea9d19cb6
   patches:
     - 01-nlopt-win.patch  # [win]
+    - 02-xml.patch
 
 build:
   ignore_run_exports:
