@@ -43,6 +43,6 @@ mkdir -p "${PREFIX}/share/man/man5"
 mv "${PREFIX}/share/man/"*.5 "${PREFIX}/share/man/man5"
 
 mkdir -p "${PREFIX}/share/${PKG_NAME}"
-mv "${PREFIX}/share/doc/LICENSE" \
-    "${PREFIX}/share/doc/README" \
+mv "${PREFIX}/share/doc/LICENSE"  \
+    "${PREFIX}/share/doc/README"  \
     "${PREFIX}/share/${PKG_NAME}"

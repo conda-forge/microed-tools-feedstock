@@ -10,8 +10,10 @@ source:
   url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
   sha256: 5fe6677f5d1f5eedfd50b8436b4c36918d1d7d4f1ad3da28b71a132ea9d19cb6
   patches:
-    - 01-nlopt-win.patch  # [win]
-    - 02-xml.patch
+    - 01-xml.patch
+    - 02-cython.patch
+    - 03-setargv.patch
+    - 04-nlopt-win.patch  # [win]
 
 build:
   ignore_run_exports:
@@ -19,7 +21,7 @@ build:
     - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
-  number: 2
+  number: 3
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
@@ -32,7 +34,7 @@ requirements:
     - coreutils                           # [unix]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
     - cython                              # [build_platform != target_platform]
-    - docbook-xsl
+    - docbook-xsl    >=1.79.2,<2
     - flex           >=2.5.34,<3          # [unix]
     - libxslt        >=0.13
     - m2-coreutils                        # [win]
@@ -42,6 +44,7 @@ requirements:
     - pandoc         2.*
     - pkg-config                          # [unix]
     - python                              # [build_platform != target_platform]
+    - sed                                 # [unix]
     - winflexbison   >=2.2,<3             # [win]
   host:
     - cython         >=0.27.1
