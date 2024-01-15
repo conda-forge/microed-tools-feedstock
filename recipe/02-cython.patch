@@ -158,7 +158,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
  #    add_library(module2 SHARED boost_module2.cxx)
  #    target_link_libraries(module2 ${Boost_LIBRARIES})
  #    python_extension_module(module2
-@@ -233,45 +246,128 @@
+@@ -233,45 +246,129 @@
  # limitations under the License.
  #=============================================================================
  
@@ -178,19 +178,20 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
 -from sys import stdout, version_info
 -from sysconfig import get_config_var
 +set(_command "
-+import distutils.sysconfig
 +import itertools
 +import os
 +import os.path
 +import site
 +import sys
 +
++from sysconfig import get_config_var, get_path
++
 +result = None
 +rel_result = None
 +candidate_lists = []
 +
 +try:
-+    candidate_lists.append((distutils.sysconfig.get_python_lib(),))
++    candidate_lists.append((get_path('stdlib'),))
 +except AttributeError: pass
 +
 +try:
@@ -217,7 +218,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
 +    sys.prefix,
 +    result,
 +    rel_result,
-+    distutils.sysconfig.get_config_var('EXT_SUFFIX')
++    get_config_var('EXT_SUFFIX')
 +)))
 +")
  
@@ -305,7 +306,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
    endif()
  endfunction()
  
-@@ -325,7 +421,7 @@ function(python_extension_module _target)
+@@ -325,7 +422,7 @@ function(python_extension_module _target)
    endif()
  
    if(NOT _is_non_lib)
@@ -314,7 +315,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
    endif()
  
    if(_is_module_lib)
-@@ -350,7 +446,7 @@ function(python_extension_module _target)
+@@ -350,7 +447,7 @@ function(python_extension_module _target)
        endif()
      endif()
  
@@ -323,7 +324,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
  
      if(_is_module_lib)
        _set_python_extension_symbol_visibility(${_target})
-@@ -359,8 +455,8 @@ function(python_extension_module _target)
+@@ -359,8 +456,8 @@ function(python_extension_module _target)
  endfunction()
  
  function(python_standalone_executable _target)
@@ -334,7 +335,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
  endfunction()
  
  function(python_modules_header _name)
-@@ -402,7 +498,7 @@ function(python_modules_header _name)
+@@ -402,7 +499,7 @@ function(python_modules_header _name)
  
    set(generated_file_tmp "${generated_file}.in")
    file(WRITE ${generated_file_tmp}
@@ -343,7 +344,7 @@ https://github.com/scikit-build/scikit-build/tree/main/skbuild/resources/cmake.
  
    set(_chunk "")
    set(_chunk "${_chunk}#ifndef ${_header_name_upper}\n")
-@@ -501,3 +597,5 @@ function(python_modules_header _name)
+@@ -501,3 +598,5 @@ function(python_modules_header _name)
    endif()
    set(${_include_dirs_var} ${CMAKE_CURRENT_BINARY_DIR} PARENT_SCOPE)
  endfunction()
