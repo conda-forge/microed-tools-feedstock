@@ -1,0 +1,296 @@
+Experimental patch for osx_arm64: do not rely on soelim(1) inclusion
+for tvips2smv(1); do not fail if setlocale(LC_ALL, "") fails, because
+LC_ALL may not be set.  Thanks to @nannengab.
+--- a/doc/CMakeLists.txt
++++ b/doc/CMakeLists.txt
+@@ -81,6 +81,8 @@
+ # . --target tvips2smv.1" should do The Right Thing (not true, at
+ # least not with CMake 3.13--need add_custom_target() to accomplish
+ # that).
++#
++# Creating symbolic links on Windows requires special privileges.
+ if(BUILD_MAN)
+   macro(add_man_command)
+     set(arguments "${ARGN}")
+@@ -138,8 +140,26 @@
+     "${PROJECT_BINARY_DIR}/SMV.5")
+   add_man_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/tiff2smv.1.xml"
+-    "${PROJECT_BINARY_DIR}/tiff2smv.1"
+-    "${PROJECT_BINARY_DIR}/tvips2smv.1")
++    "${PROJECT_BINARY_DIR}/tiff2smv.1")
++
++  if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
++    add_custom_command(
++      COMMAND ${CMAKE_COMMAND} -E copy
++        "${PROJECT_BINARY_DIR}/tiff2smv.1"
++        "${PROJECT_BINARY_DIR}/tvips2smv.1"
++      DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.1"
++      OUTPUT "${PROJECT_BINARY_DIR}/tvips2smv.1"
++      VERBATIM)
++  else()
++    add_custom_command(
++      COMMAND ${CMAKE_COMMAND} -E create_symlink
++        "tiff2smv.1"
++        "${PROJECT_BINARY_DIR}/tvips2smv.1"
++      DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.1"
++      OUTPUT "${PROJECT_BINARY_DIR}/tvips2smv.1"
++      VERBATIM)
++  endif()
++  
+ 
+   add_custom_target(man ALL
+     DEPENDS "${PROJECT_BINARY_DIR}/ht2wavelength.1"
+--- a/doc/tiff2smv.1.xml
++++ b/doc/tiff2smv.1.xml
+@@ -33,10 +33,7 @@
+   </refmeta>
+ 
+   <refnamediv>
+-    <!-- XXX Utilities should probably not share man-pages.  With the
+-         dxtbx-style input reader one of the two should go away. -->
+     <refname>tiff2smv</refname>
+-    <refname>tvips2smv</refname>
+     <refpurpose>convert TVIPS TIFF images and TVIPS set files to SMV
+     format</refpurpose>
+   </refnamediv>
+--- a/src/cphdr.c
++++ b/src/cphdr.c
+@@ -39,8 +39,7 @@
+     struct frame *frame_dst, *frame_src;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+ 
+     /* Read source frame, extract the header and free the data.
+--- a/src/dan_test.c
++++ b/src/dan_test.c
+@@ -44,8 +44,7 @@
+     size_t i;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+ 
+     /* Read the first operand image
+--- a/src/dm2smv.c
++++ b/src/dm2smv.c
+@@ -422,8 +422,7 @@
+     if (atexit(imgset_cleanup) != 0)
+         err(EXIT_FAILURE, "Failed to register registry cleanup");
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/dumpframe.c
++++ b/src/dumpframe.c
+@@ -2160,8 +2160,7 @@
+ //    float high_tension;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+     tvips_param_init(&param);
+ //    params = NULL;
+--- a/src/fixpoint.c
++++ b/src/fixpoint.c
+@@ -639,8 +639,7 @@
+     int verbose;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+     srand((unsigned int)time(NULL));
+ 
+--- a/src/ht2wavelength.c
++++ b/src/ht2wavelength.c
+@@ -76,8 +76,7 @@
+     bool inverse;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/idoc2smv.c
++++ b/src/idoc2smv.c
+@@ -422,8 +422,7 @@
+     if (atexit(imgset_cleanup) != 0)
+         err(EXIT_FAILURE, "Failed to register registry cleanup");
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/img2img.c
++++ b/src/img2img.c
+@@ -39,8 +39,7 @@
+     struct frame *frame;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+ #ifdef _WIN32
+     fopen_s(&stream, argv[1], "rb");
+--- a/src/img2px.c
++++ b/src/img2px.c
+@@ -2796,8 +2796,7 @@
+     unsigned short sf;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/img2splot.c
++++ b/src/img2splot.c
+@@ -54,8 +54,7 @@
+     char ch;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+     have_center = 0;
+     cf = cs = 0;
+--- a/src/imgcorr.c
++++ b/src/imgcorr.c
+@@ -44,8 +44,7 @@
+     size_t i;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+ 
+     /* Read the first operand image
+--- a/src/imgrevert.c
++++ b/src/imgrevert.c
+@@ -99,8 +99,7 @@
+     int fd, i, verbose;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+     output_template = "reverted/movie_23_###.img";
+     verbose = 2;
+--- a/src/mike_test.c
++++ b/src/mike_test.c
+@@ -53,8 +53,7 @@
+     int fd, force, i, verbose;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+     force = 0;
+     verbose = 1;
+--- a/src/mrc2smv.c
++++ b/src/mrc2smv.c
+@@ -422,8 +422,7 @@
+     if (atexit(imgset_cleanup) != 0)
+         err(EXIT_FAILURE, "Failed to register registry cleanup");
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/rawdump.c
++++ b/src/rawdump.c
+@@ -52,8 +52,7 @@
+     uint32_t dword, magic, width, height;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+     if (argc < 2) {
+         printf("Usage: foo file\n");
+--- a/src/ser2smv.c
++++ b/src/ser2smv.c
+@@ -1355,8 +1355,7 @@
+     unsigned short pixel_size_sf;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/smv2pgm.c
++++ b/src/smv2pgm.c
+@@ -49,8 +49,7 @@
+     uint16_t maxval;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+ #ifdef _WIN32
+     fopen_s(&stream, argv[1], "rb");
+--- a/src/tiff2raw.c
++++ b/src/tiff2raw.c
+@@ -54,8 +54,7 @@
+     bool flip;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+ 
+ 
+     /* Default values for command line options.
+--- a/src/tiff2smv.c
++++ b/src/tiff2smv.c
+@@ -244,8 +244,7 @@
+     bool flip;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 
+--- a/src/tvips2smv.c
++++ b/src/tvips2smv.c
+@@ -144,8 +144,7 @@
+     bool flip;
+ 
+ 
+-    if (setlocale(LC_ALL, "") == NULL)
+-        err(EXIT_FAILURE, "Failed to set locale");
++    setlocale(LC_ALL, "");
+     setprogname(argv[0]);
+ 
+ 

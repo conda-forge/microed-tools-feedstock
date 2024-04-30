@@ -13,7 +13,8 @@ source:
     - 01-xml.patch
     - 02-cython.patch
     - 03-setargv.patch
-    - 04-nlopt-win.patch  # [win]
+    - 04-macos.patch
+    - 05-nlopt-win.patch  # [win]
 
 build:
   ignore_run_exports:
@@ -21,7 +22,7 @@ build:
     - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
-  number: 3
+  number: 4
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
