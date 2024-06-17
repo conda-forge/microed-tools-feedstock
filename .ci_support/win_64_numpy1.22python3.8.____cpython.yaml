@@ -15,7 +15,7 @@ libiconv:
 libtiff:
 - '4.6'
 libxml2:
-- '2.12'
+- '2'
 nlopt:
 - '2.7'
 numpy:
