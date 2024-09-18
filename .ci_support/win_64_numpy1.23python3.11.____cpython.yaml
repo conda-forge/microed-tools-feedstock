@@ -15,7 +15,7 @@ libiconv:
 libtiff:
 - '4.6'
 libxml2:
-- '2.12'
+- '2'
 nlopt:
 - '2.7'
 numpy:
@@ -31,3 +31,4 @@ target_platform:
 zip_keys:
 - - python
   - numpy
+  - channel_sources
