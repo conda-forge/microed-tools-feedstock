@@ -1,4 +1,16 @@
-PyArray_CastTo() may have been deprecated in NumPy 2.
+PyArray_CastTo() may have been deprecated in NumPy 2.  Attempt to
+avoid underlinking?
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -679,6 +698,8 @@
+     Iconv::Iconv
+     LibArchive::LibArchive
+     LibXml2::LibXml2
++    Python::Module
++    Python::NumPy
+     TIFF::TIFF)
+   if(NOT HAVE_GETOPT_LONG)
+     target_sources(pysmv PRIVATE "getopt_long.c")
 --- a/src/pysmv.pyx
 +++ b/src/pysmv.pyx
 @@ -214,7 +214,7 @@

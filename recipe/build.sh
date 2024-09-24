@@ -33,14 +33,25 @@ test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
 #echo "PYTHON=${PYTHON}"
 #ls -a ${PYTHON}
 
-echo "SP_DIR/numpy"
-ls -al ${SP_DIR}/numpy
+#echo "SP_DIR/numpy"
+#ls -al ${SP_DIR}/numpy
 
-echo "SP_DIR/numpy/core"
-ls -al ${SP_DIR}/numpy/core
+#echo "SP_DIR/numpy/core"
+#ls -al ${SP_DIR}/numpy/core
 
-echo "SP_DIR/numpy/core/include"
-ls -al ${SP_DIR}/numpy/core/include
+# ${SP_DIR}/numpy/core/include only appears to exist on
+#   linux_64_numpy1.22python3.8.____cpython
+#     $PREFIX/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h
+#   linux_64_numpy1.22python3.9.____73_pypy
+#     $PREFIX/lib/python3.9/site-packages/numpy/core/include/numpy/arrayobject.h
+#   osx_64_numpy1.22python3.8.____cpython
+#     $PREFIX/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h
+#   osx_64_numpy1.22python3.9.____73_pypy
+#     $PREFIX/lib/python3.9/site-packages/numpy/core/include/numpy/arrayobject.h
+#   osx_arm64_numpy1.22python3.8.____cpython
+#     $PREFIX/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h
+#echo "SP_DIR/numpy/core/include"
+#ls -al ${SP_DIR}/numpy/core/include
 
 #echo "BUILD_PREFIX=${BUILD_PREFIX}"
 #ls -al ${BUILD_PREFIX}
@@ -50,6 +61,7 @@ ls -al ${SP_DIR}/numpy/core/include
 
 echo "USING find(1)"
 find ${PREFIX} -name "arrayobject.h"
+find ${SP_DIR} -name "arrayobject.h"
 
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
