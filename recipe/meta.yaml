@@ -16,6 +16,7 @@ source:
     - 04-macos.patch
     - 05-nlopt-win.patch  # [win]
     - 06-install.patch
+    - 07-numpy.patch
 
 build:
   ignore_run_exports:
@@ -56,7 +57,7 @@ requirements:
     - libtiff        >=4.5,<5
     - libxml2        >=2.1,<3
     - nlopt          2.*
-    - numpy          >=1.7,<2
+    - numpy          >=1.7,<3
     - python         {{ python }}
   run:
     - libarchive
