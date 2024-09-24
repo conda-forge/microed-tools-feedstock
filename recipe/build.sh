@@ -30,20 +30,11 @@ cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}  \
     -DBUILD_PYTHON_MODULE:BOOL=ON                \
     -DCMAKE_C_FLAGS:STRING="${CFLAGS} -Wall"     \
     -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} -Wall" \
+    -DCMAKE_INSTALL_DATADIR:PATH="${PREFIX}/share/${PKG_NAME}" \
+    -DCMAKE_INSTALL_DOCDIR:PATH="${PREFIX}/share/doc/${PKG_NAME}" \
     -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}"      \
     -DPython3_EXECUTABLE:PATH="${PYTHON}"        \
     "${SRC_DIR}"
 
 cmake --build .
 cmake --install .
-
-mkdir -p "${PREFIX}/share/man/man1"
-mv "${PREFIX}/share/man/"*.1 "${PREFIX}/share/man/man1"
-
-mkdir -p "${PREFIX}/share/man/man5"
-mv "${PREFIX}/share/man/"*.5 "${PREFIX}/share/man/man5"
-
-mkdir -p "${PREFIX}/share/${PKG_NAME}"
-mv "${PREFIX}/share/doc/LICENSE"  \
-    "${PREFIX}/share/doc/README"  \
-    "${PREFIX}/share/${PKG_NAME}"

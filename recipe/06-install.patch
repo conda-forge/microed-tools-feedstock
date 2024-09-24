@@ -1,0 +1,173 @@
+Install ChangeLog, LICENSE, and optionally README with TYPE DATA and
+use install(DIRECTORY ...) for documentation proper.  The conda build
+will no longer have to move files post-install, provided it is
+configured with CMAKE_INSTALL_DATADIR and CMAKE_INSTALL_DOCDIR.
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -40,9 +40,6 @@
+ string(REGEX REPLACE "[^-@0-9a-zA-Z]" "_"
+   MICROED_TOOLS_TARNAME "${MICROED_TOOLS_TARNAME}")
+ 
+-#set(CMAKE_INSTALL_DOCDIR
+-#  "${CMAKE_INSTALL_DATAROOTDIR}/doc/${MICROED_TOOLS_TARNAME}")
+-
+ # XXX Migrate to just ${PROJECT_SOURCE_DIR}/Modules?
+ list(APPEND CMAKE_MODULE_PATH
+   "${PROJECT_SOURCE_DIR}/cmake/Modules")
+@@ -78,11 +75,12 @@
+   VERBATIM)
+ 
+ 
+-# Install the LICENSE file; no transformation needed.
++# Install ChangeLog and LICENSE; no transformation needed.
+ install(
+   FILES
++    "${PROJECT_SOURCE_DIR}/ChangeLog"
+     "${PROJECT_SOURCE_DIR}/LICENSE"
+-  TYPE DOC)
++  TYPE DATA)
+ 
+ 
+ # pandoc is used to transform GitHub-flavored markdown to plain text.
+@@ -108,7 +106,7 @@
+   install(
+     FILES
+       "${PROJECT_BINARY_DIR}/README"
+-    TYPE DOC)
++    TYPE DATA)
+ endif()
+ 
+ 
+--- a/doc/CMakeLists.txt
++++ b/doc/CMakeLists.txt
+@@ -48,24 +48,21 @@
+ 
+   add_html_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/ht2wavelength.1.xml"
+-    "${PROJECT_BINARY_DIR}/ht2wavelength.html")
++    "${PROJECT_BINARY_DIR}/html/ht2wavelength.html")
+   add_html_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/SMV.5.xml"
+-    "${PROJECT_BINARY_DIR}/SMV.html")
++    "${PROJECT_BINARY_DIR}/html/SMV.html")
+   add_html_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/tiff2smv.1.xml"
+-    "${PROJECT_BINARY_DIR}/tiff2smv.html")
++    "${PROJECT_BINARY_DIR}/html/tiff2smv.html")
+ 
+   add_custom_target(html ALL
+-    DEPENDS "${PROJECT_BINARY_DIR}/ht2wavelength.html"
+-    DEPENDS "${PROJECT_BINARY_DIR}/SMV.html"
+-    DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.html")
++    DEPENDS "${PROJECT_BINARY_DIR}/html/ht2wavelength.html"
++    DEPENDS "${PROJECT_BINARY_DIR}/html/SMV.html"
++    DEPENDS "${PROJECT_BINARY_DIR}/html/tiff2smv.html")
+ 
+   install(
+-    FILES
+-      "${PROJECT_BINARY_DIR}/ht2wavelength.html"
+-      "${PROJECT_BINARY_DIR}/SMV.html"
+-      "${PROJECT_BINARY_DIR}/tiff2smv.html"
++    DIRECTORY "${PROJECT_BINARY_DIR}/html"
+     TYPE DOC)
+ endif()
+ 
+@@ -134,48 +131,43 @@
+ 
+   add_man_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/ht2wavelength.1.xml"
+-    "${PROJECT_BINARY_DIR}/ht2wavelength.1")
++    "${PROJECT_BINARY_DIR}/man1/ht2wavelength.1")
+   add_man_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/SMV.5.xml"
+-    "${PROJECT_BINARY_DIR}/SMV.5")
++    "${PROJECT_BINARY_DIR}/man5/SMV.5")
+   add_man_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/tiff2smv.1.xml"
+-    "${PROJECT_BINARY_DIR}/tiff2smv.1")
++    "${PROJECT_BINARY_DIR}/man1/tiff2smv.1")
+ 
+   if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+     add_custom_command(
+       COMMAND ${CMAKE_COMMAND} -E copy
+-        "${PROJECT_BINARY_DIR}/tiff2smv.1"
+-        "${PROJECT_BINARY_DIR}/tvips2smv.1"
+-      DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.1"
+-      OUTPUT "${PROJECT_BINARY_DIR}/tvips2smv.1"
++        "${PROJECT_BINARY_DIR}/man1/tiff2smv.1"
++        "${PROJECT_BINARY_DIR}/man1/tvips2smv.1"
++      DEPENDS "${PROJECT_BINARY_DIR}/man1/tiff2smv.1"
++      OUTPUT "${PROJECT_BINARY_DIR}/man1/tvips2smv.1"
+       VERBATIM)
+   else()
+     add_custom_command(
+       COMMAND ${CMAKE_COMMAND} -E create_symlink
+         "tiff2smv.1"
+-        "${PROJECT_BINARY_DIR}/tvips2smv.1"
+-      DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.1"
+-      OUTPUT "${PROJECT_BINARY_DIR}/tvips2smv.1"
++        "${PROJECT_BINARY_DIR}/man1/tvips2smv.1"
++      DEPENDS "${PROJECT_BINARY_DIR}/man1/tiff2smv.1"
++      OUTPUT "${PROJECT_BINARY_DIR}/man1/tvips2smv.1"
+       VERBATIM)
+   endif()
+   
+ 
+   add_custom_target(man ALL
+-    DEPENDS "${PROJECT_BINARY_DIR}/ht2wavelength.1"
+-    DEPENDS "${PROJECT_BINARY_DIR}/SMV.5"
+-    DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.1"
+-    DEPENDS "${PROJECT_BINARY_DIR}/tvips2smv.1")
++    DEPENDS "${PROJECT_BINARY_DIR}/man1/ht2wavelength.1"
++    DEPENDS "${PROJECT_BINARY_DIR}/man1/tiff2smv.1"
++    DEPENDS "${PROJECT_BINARY_DIR}/man1/tvips2smv.1"
++    DEPENDS "${PROJECT_BINARY_DIR}/man5/SMV.5")
+ 
+   install(
+-    FILES
+-      "${PROJECT_BINARY_DIR}/ht2wavelength.1"
+-      "${PROJECT_BINARY_DIR}/tiff2smv.1"
+-      "${PROJECT_BINARY_DIR}/tvips2smv.1"
+-    TYPE MAN)
+-  install(
+-    FILES
+-      "${PROJECT_BINARY_DIR}/SMV.5"
++    DIRECTORY
++      "${PROJECT_BINARY_DIR}/man1"
++      "${PROJECT_BINARY_DIR}/man5"
+     TYPE MAN)
+ endif()
+ 
+@@ -205,23 +197,21 @@
+ 
+   add_pdf_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/ht2wavelength.1.xml"
+-    "${PROJECT_BINARY_DIR}/ht2wavelength.pdf")
++    "${PROJECT_BINARY_DIR}/pdf/ht2wavelength.pdf")
+   add_pdf_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/SMV.5.xml"
+-    "${PROJECT_BINARY_DIR}/SMV.pdf")
++    "${PROJECT_BINARY_DIR}/pdf/SMV.pdf")
+   add_pdf_command(
+     "${CMAKE_CURRENT_SOURCE_DIR}/tiff2smv.1.xml"
+-    "${PROJECT_BINARY_DIR}/tiff2smv.pdf")
++    "${PROJECT_BINARY_DIR}/pdf/tiff2smv.pdf")
+ 
+   add_custom_target(pdf ALL
+-    DEPENDS "${PROJECT_BINARY_DIR}/ht2wavelength.pdf"
+-    DEPENDS "${PROJECT_BINARY_DIR}/SMV.pdf"
+-    DEPENDS "${PROJECT_BINARY_DIR}/tiff2smv.pdf")
++    DEPENDS "${PROJECT_BINARY_DIR}/pdf/ht2wavelength.pdf"
++    DEPENDS "${PROJECT_BINARY_DIR}/pdf/SMV.pdf"
++    DEPENDS "${PROJECT_BINARY_DIR}/pdf/tiff2smv.pdf")
+ 
+   install(
+-    FILES
+-      "${PROJECT_BINARY_DIR}/SMV.pdf"
+-      "${PROJECT_BINARY_DIR}/ht2wavelength.pdf"
+-      "${PROJECT_BINARY_DIR}/tiff2smv.pdf"
+-    TYPE DOC)
++    DIRECTORY "${PROJECT_BINARY_DIR}/pdf"
++    TYPE DOC
++    FILES_MATCHING PATTERN "*.pdf")
+ endif()
