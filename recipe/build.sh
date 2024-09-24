@@ -19,9 +19,14 @@ elif test -n "${OSX_ARCH}"; then
     fi
 fi
 
+#numpy_args="-DPython_FIND_STRATEGY=LOCATION"
 test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
-    numpy_args="-DPython_FIND_STRATEGY=LOCATION" # -DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/core/include"
+    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${BUILD_PREFIX}/lib/python${PY_VER}/site-packages/numpy/core/include"
 
+echo "BUILD_PREFIX=${BUILD_PREFIX}"
+ls -a ${BUILD_PREFIX}
+echo "BUILD_PREFIX/lib/python${PY_VER}/site-packages"
+ls -a ${BUILD_PREFIX}/lib/python${PY_VER}/site-packages
 echo "SP_DIR=${SP_DIR}"
 ls -a ${SP_DIR}
 echo "STDLIB_DIR=${STDLIB_DIR}"
