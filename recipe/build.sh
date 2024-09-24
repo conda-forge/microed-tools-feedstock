@@ -20,18 +20,25 @@ elif test -n "${OSX_ARCH}"; then
 fi
 
 test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
-    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/core/include"
+    numpy_args="-DPython_FIND_STRATEGY=LOCATION" # -DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/core/include"
+
+echo "SP_DIR=${SP_DIR}"
+ls -a ${SP_DIR}
+echo "STDLIB_DIR=${STDLIB_DIR}"
+ls -a ${STDLIB_DIR}
+echo "PYTHON=${PYTHON}"
+ls -a ${PYTHON}
 
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
     -i.bak "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
+#    -DCMAKE_INSTALL_DOCDIR:PATH="${PREFIX}/share/doc/${PKG_NAME}"
 cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}  \
     -DBUILD_PYTHON_MODULE:BOOL=ON                \
     -DCMAKE_C_FLAGS:STRING="${CFLAGS} -Wall"     \
     -DCMAKE_CXX_FLAGS:STRING="${CXXFLAGS} -Wall" \
     -DCMAKE_INSTALL_DATADIR:PATH="${PREFIX}/share/${PKG_NAME}" \
-    -DCMAKE_INSTALL_DOCDIR:PATH="${PREFIX}/share/doc/${PKG_NAME}" \
     -DCMAKE_INSTALL_PREFIX:PATH="${PREFIX}"      \
     -DPython3_EXECUTABLE:PATH="${PYTHON}"        \
     "${SRC_DIR}"

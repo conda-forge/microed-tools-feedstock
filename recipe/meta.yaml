@@ -23,7 +23,8 @@ build:
     - numpy
     - python
   ignore_run_exports_from:
-    - {{ compiler('cxx') }}  # [win]
+    #- {{ compiler('cxx') }}  # [win]
+    - {{ stdlib('c') }}  # [win]
   number: 5
   script_env:
     - USER                   # [unix]
