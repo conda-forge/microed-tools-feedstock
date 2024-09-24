@@ -24,26 +24,32 @@ fi
 test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
     numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/core/include"
 
-echo "SP_DIR=${SP_DIR}"
-ls -a ${SP_DIR}
-echo "STDLIB_DIR=${STDLIB_DIR}"
-ls -a ${STDLIB_DIR}
-echo "PYTHON=${PYTHON}"
-ls -a ${PYTHON}
+#echo "SP_DIR=${SP_DIR}"
+#ls -a ${SP_DIR}
 
-echo "${SP_DIR}/numpy"
-ls -a ${SP_DIR}/numpy
+#echo "STDLIB_DIR=${STDLIB_DIR}"
+#ls -a ${STDLIB_DIR}
 
-echo "${SP_DIR}/numpy/core"
-ls -a ${SP_DIR}/numpy/core
+#echo "PYTHON=${PYTHON}"
+#ls -a ${PYTHON}
 
-echo "${SP_DIR}/numpy/core/include"
-ls -a ${SP_DIR}/numpy/core/include
+echo "SP_DIR/numpy"
+ls -al ${SP_DIR}/numpy
 
-echo "BUILD_PREFIX=${BUILD_PREFIX}"
-ls -a ${BUILD_PREFIX}
-echo "BUILD_PREFIX/lib/python${PY_VER}/site-packages"
-ls -a ${BUILD_PREFIX}/lib
+echo "SP_DIR/numpy/core"
+ls -al ${SP_DIR}/numpy/core
+
+echo "SP_DIR/numpy/core/include"
+ls -al ${SP_DIR}/numpy/core/include
+
+#echo "BUILD_PREFIX=${BUILD_PREFIX}"
+#ls -al ${BUILD_PREFIX}
+
+#echo "BUILD_PREFIX/lib/python${PY_VER}/site-packages"
+#ls -al ${BUILD_PREFIX}/lib
+
+echo "USING find(1)"
+find ${PREFIX} -name "arrayobject.h"
 
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
