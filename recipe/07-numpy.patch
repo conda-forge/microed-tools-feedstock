@@ -6,8 +6,8 @@ avoid underlinking?
      Iconv::Iconv
      LibArchive::LibArchive
      LibXml2::LibXml2
-+    Python::Module
-+    Python::NumPy
++    Python3::Module
++    Python3::NumPy
      TIFF::TIFF)
    if(NOT HAVE_GETOPT_LONG)
      target_sources(pysmv PRIVATE "getopt_long.c")

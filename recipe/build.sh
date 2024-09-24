@@ -21,8 +21,15 @@ fi
 
 #numpy_args="-DPython_FIND_STRATEGY=LOCATION"
 #numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${BUILD_PREFIX}/lib/python${PY_VER}/site-packages/numpy/core/include"
-test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
-    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/core/include"
+if test -n "${CONDA_BUILD_CROSS_COMPILATION}"; then
+    echo "BUILDING WITH '${CONDA_NPY}'"
+    if test "${CONDA_NPY}" -lt "200"; then
+	include_dir="${SP_DIR}/numpy/core/include"
+    else
+	include_dir="${SP_DIR}/numpy/_core/include"
+    fi
+    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${include_dir}"
+fi
 
 #echo "SP_DIR=${SP_DIR}"
 #ls -a ${SP_DIR}
@@ -50,6 +57,7 @@ test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
 #     $PREFIX/lib/python3.9/site-packages/numpy/core/include/numpy/arrayobject.h
 #   osx_arm64_numpy1.22python3.8.____cpython
 #     $PREFIX/lib/python3.8/site-packages/numpy/core/include/numpy/arrayobject.h
+
 #echo "SP_DIR/numpy/core/include"
 #ls -al ${SP_DIR}/numpy/core/include
 
@@ -59,9 +67,9 @@ test -n "${CONDA_BUILD_CROSS_COMPILATION}" &&                                  \
 #echo "BUILD_PREFIX/lib/python${PY_VER}/site-packages"
 #ls -al ${BUILD_PREFIX}/lib
 
-echo "USING find(1)"
-find ${PREFIX} -name "arrayobject.h"
-find ${SP_DIR} -name "arrayobject.h"
+#echo "USING find(1)"
+#find ${PREFIX} -name "arrayobject.h"
+#find ${SP_DIR} -name "arrayobject.h"
 
 test "${PKG_BUILDNUM}" != "0" && sed                                       \
     -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
