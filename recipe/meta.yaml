@@ -14,7 +14,6 @@ source:
     - 02-cython.patch
     - 03-setargv.patch
     - 04-macos.patch
-    #- 05-nlopt-win.patch  # [win]
     - 05-install.patch
     - 06-numpy.patch
 
@@ -24,17 +23,18 @@ build:
     - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
-    #- {{ stdlib('c') }}      # [win]
+    - {{ stdlib('c') }}      # [win]
   number: 5
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
+  skip: True                 # [win and py == 39 and python_impl == 'pypy']
 
 requirements:
   build:
     - {{ compiler('c') }}
-    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
+    - {{ stdlib('c') }}
     - cmake          >=3.18,<4
     - coreutils                           # [unix]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
