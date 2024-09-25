@@ -22,8 +22,8 @@ fi
 #numpy_args="-DPython_FIND_STRATEGY=LOCATION"
 #numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${BUILD_PREFIX}/lib/python${PY_VER}/site-packages/numpy/core/include"
 if test -n "${CONDA_BUILD_CROSS_COMPILATION}"; then
-    echo "BUILDING WITH '${CONDA_NPY}'"
-    if test "${CONDA_NPY}" -lt "200"; then
+    echo "BUILDING WITH CONDA_NPY='${CONDA_NPY}' NPY_VER='${NPY_VER}'"
+    if test "${CONDA_NPY}" != "20"; then
 	include_dir="${SP_DIR}/numpy/core/include"
     else
 	include_dir="${SP_DIR}/numpy/_core/include"

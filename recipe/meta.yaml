@@ -19,12 +19,12 @@ source:
     - 07-numpy.patch
 
 build:
-  #ignore_run_exports:
-  #  - numpy
-  #  - python
+  ignore_run_exports:
+    - numpy
+    - python
   ignore_run_exports_from:
-    - {{ compiler('cxx') }}  # [win]
-    - {{ stdlib('c') }}  # [win]
+    #- {{ compiler('cxx') }}  # [win]
+    - {{ stdlib('c') }}      # [win]
   number: 5
   script_env:
     - USER                   # [unix]

@@ -2,7 +2,7 @@ PyArray_CastTo() may have been deprecated in NumPy 2.  Attempt to
 avoid underlinking?
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -679,6 +698,8 @@
+@@ -698,6 +698,8 @@
      Iconv::Iconv
      LibArchive::LibArchive
      LibXml2::LibXml2
