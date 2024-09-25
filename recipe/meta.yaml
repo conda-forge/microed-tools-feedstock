@@ -15,8 +15,8 @@ source:
     - 03-setargv.patch
     - 04-macos.patch
     #- 05-nlopt-win.patch  # [win]
-    - 06-install.patch
-    - 07-numpy.patch
+    - 05-install.patch
+    - 06-numpy.patch
 
 build:
   ignore_run_exports:
@@ -47,7 +47,7 @@ requirements:
     - make                                # [unix]
     - numpy                               # [build_platform != target_platform]
     - pandoc         2.*
-    - pkg-config                          # [unix]
+    - pkg-config
     - python                              # [build_platform != target_platform]
     - sed                                 # [unix]
     - winflexbison   >=2.2,<3             # [win]
