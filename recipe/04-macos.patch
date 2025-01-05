@@ -1,0 +1,38 @@
+MicroED tools 0.1.0-dev.9 may have been rushed...
+--- a/src/imgset.cpp
++++ b/src/imgset.cpp
+@@ -75,7 +75,7 @@
+ namespace
+ {
+     std::once_flag _cleanup_control;
+-    std::once_flag _init_control;
++//    std::once_flag _init_control;
+ }
+ 
+ 
+--- a/src/pool.cpp
++++ b/src/pool.cpp
+@@ -20,6 +20,7 @@
+ 
+ #include <cstring>
+ 
++#include <condition_variable>
+ #include <deque>
+ #include <filesystem>
+ #include <future>
+--- a/src/tiff.c
++++ b/src/tiff.c
+@@ -859,7 +859,12 @@
+ static int
+ _tiff_ba_map_file(thandle_t handle, void **addr, toff_t *len)
+ {
+-    return (container_mmap((CONTAINER *)handle, addr, len));
++    size_t slen;
++    int ret;
++
++    ret = container_mmap((CONTAINER *)handle, addr, &slen);
++    *len = slen;
++    return (ret);
+ }
+ 
+ 

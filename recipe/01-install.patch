@@ -4,7 +4,31 @@ will no longer have to move files post-install, provided it is
 configured with CMAKE_INSTALL_DATADIR and CMAKE_INSTALL_DOCDIR.
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -40,9 +40,6 @@
+@@ -9,16 +9,20 @@
+ # without any warranty.
+ 
+ # find_program()'s REQUIRED option was introduced in CMake 3.18.
+-# Unless defined, set PROJECT_VERSION_TWEAK to zero, because
+-# config.h.in expects it to be an integer.  The MicroED tools require
+-# C11 and C++17 compilers.
++# CMP0177, introduced in CMake 3.31, normalizes all DESTINATION paths
++# in install().
+ cmake_minimum_required(VERSION 3.18)
++cmake_policy(SET CMP0177 NEW)
+ project("MicroED tools"
+   DESCRIPTION "Convert electron diffraction images to SMV format"
+   HOMEPAGE_URL "https://cryoem.ucla.edu/microed"
+   LANGUAGES C CXX
+   VERSION 0.1.0)
+ 
++
++# Unless defined, set PROJECT_VERSION_TWEAK to zero, because
++# config.h.in expects it to be an integer.  The MicroED tools require
++# C11 and C++17 compilers.
+ if(NOT PROJECT_VERSION_TWEAK)
+   set(PROJECT_VERSION_TWEAK 0)
+ endif()
+@@ -40,9 +44,6 @@
  string(REGEX REPLACE "[^-@0-9a-zA-Z]" "_"
    MICROED_TOOLS_TARNAME "${MICROED_TOOLS_TARNAME}")
  
@@ -14,7 +38,7 @@ configured with CMAKE_INSTALL_DATADIR and CMAKE_INSTALL_DOCDIR.
  # XXX Migrate to just ${PROJECT_SOURCE_DIR}/Modules?
  list(APPEND CMAKE_MODULE_PATH
    "${PROJECT_SOURCE_DIR}/cmake/Modules")
-@@ -78,11 +75,12 @@
+@@ -78,11 +79,12 @@
    VERBATIM)
  
  
@@ -29,7 +53,7 @@ configured with CMAKE_INSTALL_DATADIR and CMAKE_INSTALL_DOCDIR.
  
  
  # pandoc is used to transform GitHub-flavored markdown to plain text.
-@@ -108,7 +106,7 @@
+@@ -108,7 +110,7 @@
    install(
      FILES
        "${PROJECT_BINARY_DIR}/README"

@@ -12,7 +12,8 @@ source:
   patches:
     - 01-install.patch
     - 02-numpy.patch
-    - 03-msvc.patch
+    - 03-windows.patch
+    - 04-macos.patch
 
 build:
   ignore_run_exports:
