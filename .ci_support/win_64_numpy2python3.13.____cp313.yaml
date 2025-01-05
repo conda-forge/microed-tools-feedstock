@@ -1,0 +1,38 @@
+ace:
+- 8.0.1
+c_compiler:
+- vs2019
+c_stdlib:
+- vs
+channel_sources:
+- conda-forge/label/microed-data_dev,conda-forge
+channel_targets:
+- conda-forge microed-tools_dev
+cxx_compiler:
+- vs2019
+libarchive:
+- '3.7'
+libiconv:
+- '1'
+libtiff:
+- '4.7'
+libxml2:
+- '2'
+nlopt:
+- '2.9'
+numpy:
+- '2'
+pin_run_as_build:
+  python:
+    min_pin: x.x
+    max_pin: x.x
+python:
+- 3.13.* *_cp313
+python_impl:
+- cpython
+target_platform:
+- win-64
+zip_keys:
+- - python
+  - numpy
+  - python_impl
