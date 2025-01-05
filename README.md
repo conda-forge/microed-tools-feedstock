@@ -9,7 +9,7 @@ Package license: ISC
 
 Summary: Convert electron diffraction images to SMV format
 
-The MicroED tools convert sequences of related electron
+The MicroED tools convert contiguous sequences of electron
 diffraction images, or MicroED sweeps, to the Super Marty View
 (SMV) format.
 

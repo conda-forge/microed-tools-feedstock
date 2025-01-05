@@ -2,14 +2,12 @@ MACOSX_DEPLOYMENT_TARGET:
 - '11.0'
 MACOSX_SDK_VERSION:
 - '11.0'
+ace:
+- 8.0.2
 c_compiler:
 - clang
 c_compiler_version:
-- '17'
-c_stdlib:
-- macosx_deployment_target
-c_stdlib_version:
-- '11.0'
+- '18'
 channel_sources:
 - conda-forge/label/microed-data_dev,conda-forge
 channel_targets:
@@ -17,7 +15,7 @@ channel_targets:
 cxx_compiler:
 - clangxx
 cxx_compiler_version:
-- '17'
+- '18'
 libarchive:
 - '3.7'
 libtiff:
@@ -27,7 +25,7 @@ libxml2:
 macos_machine:
 - arm64-apple-darwin20.0.0
 nlopt:
-- '2.7'
+- '2.9'
 numpy:
 - '2.0'
 pin_run_as_build:
@@ -36,8 +34,6 @@ pin_run_as_build:
     max_pin: x.x
 python:
 - 3.9.* *_cpython
-python_impl:
-- cpython
 target_platform:
 - osx-arm64
 zip_keys:
@@ -45,4 +41,3 @@ zip_keys:
   - cxx_compiler_version
 - - python
   - numpy
-  - python_impl
