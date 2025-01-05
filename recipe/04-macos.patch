@@ -1,4 +1,5 @@
-MicroED tools 0.1.0-dev.9 may have been rushed...
+MicroED tools 0.1.0-dev.9 may have been rushed...  Thanks to
+@DrTheMick.
 --- a/src/imgset.cpp
 +++ b/src/imgset.cpp
 @@ -75,7 +75,7 @@
@@ -10,6 +11,17 @@ MicroED tools 0.1.0-dev.9 may have been rushed...
  }
  
  
+--- a/src/metadata.c
++++ b/src/metadata.c
+@@ -677,7 +677,7 @@
+ _utf82wchar(const char *str)
+ {
+     char *buf, *inbuf, *outbuf;
+-    iconv_t *cd;
++    iconv_t cd;
+     size_t inbytesleft, len, outbytesleft;
+ 
+     inbytesleft = strlen(str);
 --- a/src/pool.cpp
 +++ b/src/pool.cpp
 @@ -20,6 +20,7 @@
@@ -36,3 +48,50 @@ MicroED tools 0.1.0-dev.9 may have been rushed...
  }
  
  
+--- a/src/util.c
++++ b/src/util.c
+@@ -791,7 +791,7 @@
+     /**
+      * @brief New locale, freed by numloc_free() if necessary
+      */
+-#ifdef _WIN32
++#if defined(__APPLE__) || defined(_WIN32)
+ #else
+     locale_t new;
+ #endif
+@@ -799,7 +799,7 @@
+     /**
+      * @brief Old locale, restored by numloc_free()
+      */
+-#ifdef _WIN32
++#if defined(__APPLE__) || defined(_WIN32)
+     char *old;
+ #else
+     locale_t old;
+@@ -811,7 +811,7 @@
+ numloc_new()
+ {
+     struct _numloc *numloc;
+-#ifdef _WIN32
++#if defined(__APPLE__) || defined(_WIN32)
+     char *loc;
+ #else
+     locale_t loc;
+@@ -822,7 +822,7 @@
+     if (numloc == NULL)
+         return (NULL);
+ 
+-#ifdef _WIN32
++#if defined(__APPLE__) || defined(_WIN32)
+     numloc->old = setlocale(LC_NUMERIC, NULL);
+     if (numloc->old == NULL) {
+         free(numloc);
+@@ -872,7 +872,7 @@
+ {
+     int ret;
+ 
+-#ifdef _WIN32
++#if defined(__APPLE__) || defined(_WIN32)
+     ret = setlocale(LC_NUMERIC, numloc->old) == NULL ? -1 : 0;
+     free(numloc->old);
+ #else
