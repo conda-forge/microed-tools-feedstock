@@ -1,0 +1,51 @@
+PyArray_CastTo() may have been deprecated in NumPy 2.  Attempt to
+avoid underlinking?
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -709,6 +709,8 @@
+     Iconv::Iconv
+     LibArchive::LibArchive
+     LibXml2::LibXml2
++    Python3::Module
++    Python3::NumPy
+     TIFF::TIFF)
+   if(NOT HAVE_GETOPT_LONG)
+     target_sources(pysmv PRIVATE "getopt_long.c")
+--- a/src/pysmv.pyx
++++ b/src/pysmv.pyx
+@@ -214,7 +214,7 @@
+     def binning(self, np.ndarray val):
+         out = np.PyArray_SimpleNewFromData(
+             1, [2], np.NPY_UINT, self._ptr.binning)
+-        if np.PyArray_CastTo(out, val) != 0:
++        if np.PyArray_CopyInto(out, val) != 0:
+             raise TypeError(f"Cannot cast {val} to UINT[2]")
+ 
+ 
+@@ -231,7 +231,7 @@
+     def p0(self, np.ndarray val):
+         out = np.PyArray_SimpleNewFromData(
+             1, [3], np.NPY_FLOAT64, self._ptr.p0)
+-        if np.PyArray_CastTo(out, val) != 0:
++        if np.PyArray_CopyInto(out, val) != 0:
+             raise ValueError(f"Cannot cast {val} to FLOAT64[3]")
+ 
+ 
+@@ -248,7 +248,7 @@
+     def pf(self, np.ndarray val):
+         out = np.PyArray_SimpleNewFromData(
+             1, [3], np.NPY_FLOAT64, self._ptr.pf)
+-        if np.PyArray_CastTo(out, val) != 0:
++        if np.PyArray_CopyInto(out, val) != 0:
+             raise ValueError(f"Cannot cast {val} to FLOAT64[3]")
+ 
+ 
+@@ -265,7 +265,7 @@
+     def ps(self, np.ndarray val):
+         out = np.PyArray_SimpleNewFromData(
+             1, [3], np.NPY_FLOAT64, self._ptr.ps)
+-        if np.PyArray_CastTo(out, val) != 0:
++        if np.PyArray_CopyInto(out, val) != 0:
+             raise ValueError(f"Cannot cast {val} to FLOAT64[3]")
+ 
+ 

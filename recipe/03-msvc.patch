@@ -1,0 +1,162 @@
+MicroED tools 0.1.0-dev.9 may have been rushed...
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -141,10 +141,8 @@
+ # after 2.7.1 from 2021-12-03 and includes
+ # https://github.com/stevengj/nlopt/pull/534).  XXX Should note this
+ # in README.md once that release is out.
+-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+-  find_package(PkgConfig REQUIRED)
+-  pkg_check_modules(NLopt REQUIRED IMPORTED_TARGET nlopt>=2.0)
+-endif()
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(NLopt REQUIRED IMPORTED_TARGET nlopt>=2.0)
+ 
+ 
+ # Any POSIX-compliant thread library should be fine.
+@@ -486,15 +484,8 @@
+ if(NOT HAVE_GETOPT_LONG)
+   target_sources(img2px PRIVATE "getopt_long.c")
+ endif()
+-if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+-  target_include_directories(img2px PRIVATE
+-    "${NLOPT_INCLUDE_DIRS}")
+-  target_link_libraries(img2px
+-    "${NLOPT_LIBRARIES}")
+-else()
+-  target_link_libraries(img2px
+-    PkgConfig::NLopt)
+-endif()
++target_link_libraries(img2px
++  PkgConfig::NLopt)
+ if(ENABLE_CBF)
+   target_link_libraries(img2px CBF::CBF)
+ endif()
+--- a/src/metadata.c
++++ b/src/metadata.c
+@@ -892,8 +892,9 @@
+             /* For scalars: update @c maxwidth, the longest display
+              * width in the current stretch of scalars.
+              */
+-            keylen[i].width = wcslen(keylen[i].key);
+-#ifndef _WIN32
++#ifdef _WIN32
++            keylen[i].width = (int)wcslen(keylen[i].key);
++#else
+             keylen[i].width = wcswidth(keylen[i].key, keylen[i].width);
+ #endif
+             if (pair->value->type != metadata_type_object) {
+--- a/src/mrc.c
++++ b/src/mrc.c
+@@ -598,7 +598,7 @@
+          size_t nchars) // XXX better name? nmemb?
+ {
+     if (off + nchars > len)
+-        return (NULL);
++        return (false);
+     return (metadata_object_set_new(
+                 obj, key, metadata_strn(buf + off, nchars)));
+ }
+--- a/src/tiff.c
++++ b/src/tiff.c
+@@ -330,7 +330,7 @@
+         return (true);
+     }
+     if (metadata_is_integer(obj)) {
+-        *val = metadata_integer_value(obj);
++        *val = (double)metadata_integer_value(obj);
+         return (true);
+     }
+     return (false);
+@@ -1942,12 +1942,12 @@
+             && metadata_integer_value_check(val, &ll)
+             && ll % 10000 == 0
+             && ll > 0
+-            && ll <= 10000 * UINT_MAX
++            && ll / 10000 <= UINT_MAX
+             && binning_version[0] <= 1
+             && binning_version[1] <= 1) {
+             /* TemDataV1 binning factor: [0.0001 * 1]
+              */
+-            binning[0] = binning[1] = ll / 10000;
++            binning[0] = binning[1] = (unsigned short)(ll / 10000);
+             binning_version[0] = binning_version[1] = 1;
+ 
+         } else if (strcmp(key, "Binning X (px)") == 0
+@@ -1955,7 +1955,7 @@
+                    && ll > 0
+                    && ll <= UINT_MAX
+                    && binning_version[1] <= 2) {
+-            binning[1] = ll;
++            binning[1] = (unsigned int)ll;
+             binning_version[1] = 2;
+ 
+         } else if (strcmp(key, "Binning Y (px)") == 0
+@@ -1963,7 +1963,7 @@
+                    && ll > 0
+                    && ll <= UINT_MAX
+                    && binning_version[0] <= 2) {
+-            binning[0] = ll;
++            binning[0] = (unsigned int)ll;
+             binning_version[0] = 2;
+ 
+         } else if (strcmp(key, "High tension (kV)") == 0
+@@ -1972,7 +1972,9 @@
+             /* TemDataV1 high tension: integer [0.1 V].  All digits
+              * are assumed to be significant.
+              */
+-            sf = ll > 0 ? lrint(floor(log10(ll) + 1)) : 0;
++            sf = ll > 0
++                ? (unsigned short)lrint(floor(log10((double)ll) + 1))
++                : 0;
+             tvips_param_update_wavelength(
+                 param, 1e10 * ht2wavelength(0.1 * ll), sf);
+ 
+@@ -2021,7 +2023,9 @@
+                    && ll >= 0) {
+             /* TemDataV1 pixel size: integer [0.1 nm].
+              */
+-            sf = ll > 0 ? lrint(floor(log10(ll) + 1)) : 0;
++            sf = ll > 0
++                ? (unsigned short)lrint(floor(log10((double)ll) + 1))
++                : 0;
+             if (sf > pixel_size_sf) {
+                 pixel_size[0] = pixel_size[1] = 1e-10 * ll;
+                 pixel_size_sf = sf;
+@@ -2091,14 +2095,14 @@
+          * mktimez() to guess whether daylight savings is in
+          * effect for the given time.
+          */
+-        tm.tm_year = (tem_date >> 16) - 1900;
++        tm.tm_year = (int)((tem_date >> 16) - 1900);
+         tm.tm_mon  = ((tem_date >> 8) & 0xff) - 1;
+         tm.tm_mday = tem_date & 0xff;
+ 
+         lld = lldiv(tem_time, 60 * 60);
+         tm.tm_hour = (int)lld.quot;
+ 
+-        id = div(lld.rem, 60);
++        id = div((int)lld.rem, 60);
+         tm.tm_min   = id.quot;
+         tm.tm_sec   = id.rem;
+         tm.tm_isdst = -1;
+@@ -3702,7 +3706,7 @@
+ 
+             u32 = _tiff_ftoh32(handle->tif, &handle->tem_data[84]);
+             frame->wavelength = 1e10 * ht2wavelength(0.1 * u32);
+-            frame->wavelength_sf = lrint(floor(log10(u32) + 1));
++            frame->wavelength_sf = (unsigned short)lrint(floor(log10(u32) + 1));
+             break;
+ 
+ 
+--- a/src/xml.c
++++ b/src/xml.c
+@@ -301,7 +301,7 @@
+ 
+     /* To allow content encoding detection, size should be >= 4.
+      */
+-    buf_size = container_bufsize(container);
++    buf_size = (int)container_bufsize(container);
+     if (buf_size < 4)
+         return (NULL);
+ 
