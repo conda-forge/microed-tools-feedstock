@@ -1,5 +1,17 @@
 MicroED tools 0.1.0-dev.9 may have been rushed...  Thanks to
 @DrTheMick.
+--- a/src/dumpframe.c
++++ b/src/dumpframe.c
+@@ -2019,6 +2019,9 @@
+         }
+     }
+ 
++    if (errors > 0)
++        return (EXIT_FAILURE);
++
+ 
+     /* XXX TEST
+      */
 --- a/src/imgset.cpp
 +++ b/src/imgset.cpp
 @@ -75,7 +75,7 @@
@@ -32,6 +44,20 @@ MicroED tools 0.1.0-dev.9 may have been rushed...  Thanks to
  #include <deque>
  #include <filesystem>
  #include <future>
+--- a/src/ser2smv.c
++++ b/src/ser2smv.c
+@@ -1560,6 +1560,11 @@
+         }
+     }
+ 
++    if (errors > 0) {
++        tvips_output_free(output);
++        _usage(EXIT_FAILURE);
++    }
++
+ 
+     /* Pixel size cannot be set until binning has been determined.
+      */
 --- a/src/tiff.c
 +++ b/src/tiff.c
 @@ -859,7 +859,12 @@
