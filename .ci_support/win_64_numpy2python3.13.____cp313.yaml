@@ -19,7 +19,7 @@ libtiff:
 libxml2:
 - '2'
 nlopt:
-- '2.9'
+- '2.10'
 numpy:
 - '2'
 pin_run_as_build:
