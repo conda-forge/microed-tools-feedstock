@@ -21,7 +21,7 @@ cxx_compiler:
 cxx_compiler_version:
 - '18'
 libarchive:
-- '3.7'
+- '3.8'
 libtiff:
 - '4.7'
 libxml2:
@@ -31,17 +31,15 @@ macos_machine:
 nlopt:
 - '2.10'
 numpy:
-- '2.0'
+- '2'
 pin_run_as_build:
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.9.* *_cpython
+- 3.11.* *_cpython
 target_platform:
 - osx-64
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
-- - python
-  - numpy
