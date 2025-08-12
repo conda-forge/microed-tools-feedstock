@@ -34,15 +34,13 @@ MicroED tools 0.1.0-dev.9 may have been rushed...
  endif()
 --- a/src/metadata.c
 +++ b/src/metadata.c
-@@ -892,8 +892,9 @@
+@@ -892,8 +892,8 @@
              /* For scalars: update @c maxwidth, the longest display
               * width in the current stretch of scalars.
               */
 -            keylen[i].width = wcslen(keylen[i].key);
--#ifndef _WIN32
-+#ifdef _WIN32
 +            keylen[i].width = (int)wcslen(keylen[i].key);
-+#else
+ #ifndef _WIN32
              keylen[i].width = wcswidth(keylen[i].key, keylen[i].width);
  #endif
              if (pair->value->type != metadata_type_object) {

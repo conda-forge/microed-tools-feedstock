@@ -1,13 +1,13 @@
 #! /bin/sh
 
 _version_lt() {
-    _lhs=`echo "${1}" | cut -d '.' -f 1`
-    _rhs=`echo "${2}" | cut -d '.' -f 1`
+    _lhs=`echo "${1}" | cut -d. -f1`
+    _rhs=`echo "${2}" | cut -d. -f1`
     test "${_lhs}" -lt "${_rhs}" && return 0
 
     if test "${_lhs}" -eq "${_rhs}"; then
-        _lhs=`echo "${1}" | cut -d '.' -f 2`
-        _rhs=`echo "${2}" | cut -d '.' -f 2`
+        _lhs=`echo "${1}" | cut -d. -f2`
+        _rhs=`echo "${2}" | cut -d. -f2`
         test "${_lhs}" -lt "${_rhs}" && return 0
     fi
 
@@ -30,7 +30,7 @@ elif test -n "${OSX_ARCH}"; then
     fi
 fi
 
-if test -n "${CONDA_BUILD_CROSS_COMPILATION}"; then
+if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
     if _version_lt "${NPY_VER}" "2.0" ; then
         _include_dir="${SP_DIR}/numpy/core/include"
     else
