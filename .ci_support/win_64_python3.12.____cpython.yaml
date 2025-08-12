@@ -1,7 +1,7 @@
 ace:
-- 8.0.2
+- 8.0.4
 c_compiler:
-- vs2019
+- vs2022
 c_stdlib:
 - vs
 channel_sources:
@@ -9,7 +9,7 @@ channel_sources:
 channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
-- vs2019
+- vs2022
 libarchive:
 - '3.8'
 libiconv:
