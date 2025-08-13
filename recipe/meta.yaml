@@ -16,9 +16,6 @@ source:
     - 04-macos.patch
 
 build:
-  ignore_run_exports:
-    - numpy
-    - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
