@@ -6,7 +6,6 @@ if not "%PKG_BUILDNUM%" == "0" sed                                        ^
 
 cmake %CMAKE_ARGS%                                           ^
     -DBUILD_PYTHON_MODULE:BOOL=ON                            ^
-    -DCMAKE_BUILD_TYPE:STRING=Release                        ^
     -DCMAKE_C_FLAGS:STRING="%CFLAGS% /W3"                    ^
     -DCMAKE_CXX_FLAGS:STRING="%CXXFLAGS% /EHsc /W3"          ^
     -DCMAKE_INSTALL_DATADIR:PATH="%PREFIX%\share\%PKG_NAME%" ^

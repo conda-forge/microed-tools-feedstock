@@ -55,6 +55,126 @@ MicroED tools 0.1.0-dev.9 may have been rushed...
      return (metadata_object_set_new(
                  obj, key, metadata_strn(buf + off, nchars)));
  }
+--- a/src/raster.h
++++ b/src/raster.h
+@@ -52,10 +52,11 @@ struct _assign
+      * @brief Default assignment of any arithmetic type using @c
+      *        static_cast
+      */
+-    template<typename T, typename std::enable_if<
+-                             std::is_arithmetic<T>::value, bool>::type = true,
+-             typename U, typename std::enable_if<
+-                             std::is_arithmetic<U>::value, bool>::type = true>
++    template<typename T,
++             typename U,
++             typename std::enable_if<
++                 std::is_arithmetic<T>::value
++                 && std::is_arithmetic<U>::value, bool>::type = true>
+     void
+     operator()(T& lhs, const U& rhs)
+     {
+@@ -94,9 +95,10 @@ struct _assign
+      *
+      * Drop imaginary part.
+      */
+-    template<typename T, typename std::enable_if<
+-                             std::is_arithmetic<T>::value, bool>::type = true,
+-             typename U>
++    template<typename T,
++             typename U,
++             typename std::enable_if<
++                 std::is_arithmetic<T>::value, bool>::type = true>
+     void
+     operator()(T& lhs, const std::complex<U>& rhs)
+     {
+@@ -107,8 +109,9 @@ struct _assign
+     /**
+      * @brief Assign floating point from @c bool
+      */
+-    template<typename T, typename std::enable_if<
+-                             std::is_floating_point<T>::value, bool>::type = true>
++    template<typename T,
++             typename std::enable_if<
++                 std::is_floating_point<T>::value, bool>::type = true>
+     void
+     operator()(T& lhs, const bool& rhs)
+     {
+@@ -121,8 +124,6 @@ struct _assign
+  */
+ struct _checked_assign : public _assign
+ {
+-    using _assign::operator();
+-
+     /**
+      * @brief Number of elements less than the lowest finite value
+      *        representable by the target type
+@@ -137,16 +138,48 @@ struct _checked_assign : public _assign
+ 
+ 
+     /**
+-     * @brief Assign integer from floating point
++     * @brief Assign non-integer
+      *
+-     * Round to largest integer type, then check representable range.
++     * Fall back on unchecked assignment.
+      */
+     template<typename T,
++             typename U,
+              typename std::enable_if<
+-                 std::is_integral<T>::value, bool>::type = true,
++                 !std::is_integral<T>::value, bool>::type = true>
++    void
++    operator()(T& lhs, const U& rhs)
++    {
++        _assign::operator()(lhs, rhs);
++    }
++
++
++    /**
++     * @brief Assign integer from non-arithmetic type
++     *
++     * Fall back on unchecked assignment.
++     */
++    template<typename T,
+              typename U,
+              typename std::enable_if<
+-                 std::is_floating_point<U>::value, bool>::type = true>
++                 std::is_integral<T>::value
++                 && !std::is_arithmetic<U>::value, bool>::type = true>
++    void
++    operator()(T& lhs, const U& rhs)
++    {
++        _assign::operator()(lhs, rhs);
++    }
++
++
++    /**
++     * @brief Assign integer from floating point
++     *
++     * Round to largest integral type, then check representable range.
++     */
++    template<typename T,
++             typename U,
++             typename std::enable_if<
++                 std::is_integral<T>::value
++                 && std::is_floating_point<U>::value, bool>::type = true>
+     void
+     operator()(T& lhs, const U& rhs)
+     {
+@@ -161,11 +194,10 @@ struct _checked_assign : public _assign
+      * left-hand-side type, cap to representable range.
+      */
+     template<typename T,
+-             typename std::enable_if<
+-                 std::is_integral<T>::value, bool>::type = true,
+              typename U,
+              typename std::enable_if<
+-                 std::is_integral<U>::value, bool>::type = true>
++                 std::is_integral<T>::value
++                 && std::is_integral<U>::value, bool>::type = true>
+     void
+     operator()(T& lhs, const U& rhs)
+     {
 --- a/src/tiff.c
 +++ b/src/tiff.c
 @@ -330,7 +330,7 @@
