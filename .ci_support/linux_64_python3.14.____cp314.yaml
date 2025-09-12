@@ -1,5 +1,5 @@
 ace:
-- 8.0.4
+- 8.0.5
 c_compiler:
 - gcc
 c_compiler_version:
@@ -11,7 +11,7 @@ c_stdlib_version:
 cdt_name:
 - conda
 channel_sources:
-- conda-forge/label/microed-data_dev,conda-forge
+- conda-forge,conda-forge/label/python_rc,conda-forge/label/microed-data_dev
 channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
@@ -35,9 +35,11 @@ pin_run_as_build:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.9.* *_cpython
+- 3.14.* *_cp314
 target_platform:
 - linux-64
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
+- - python
+  - channel_sources
