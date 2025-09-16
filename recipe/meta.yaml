@@ -22,7 +22,7 @@ build:
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
-  number: 3
+  number: 4
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
@@ -53,7 +53,7 @@ requirements:
     - libarchive     >=3.0.2,<4
     - libiconv                            # [win]
     - libtiff        >=4.5,<5
-    - libxml2        >=2.1,<3
+    - libxml2-devel        >=2.1,<3
     - nlopt          2.*                  # [unix]
     - nlopt          >=2.8,<3             # [win]
     - numpy          >=1.7,<3
@@ -62,7 +62,7 @@ requirements:
     - libarchive
     - libiconv                            # [win]
     - libtiff
-    - libxml2
+    - libxml2-devel
     - nlopt
     - numpy
     - python
