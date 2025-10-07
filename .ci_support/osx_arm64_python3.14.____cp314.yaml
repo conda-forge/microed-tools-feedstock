@@ -13,7 +13,7 @@ c_stdlib:
 c_stdlib_version:
 - '11.0'
 channel_sources:
-- conda-forge,conda-forge/label/python_rc
+- conda-forge/label/microed-data_dev,conda-forge,conda-forge/label/python_rc
 channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
@@ -24,8 +24,8 @@ libarchive:
 - '3.8'
 libtiff:
 - '4.7'
-libxml2:
-- '2.13'
+libxml2_devel:
+- '2.14'
 macos_machine:
 - arm64-apple-darwin20.0.0
 nlopt:
