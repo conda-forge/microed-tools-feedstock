@@ -9,11 +9,6 @@ package:
 source:
   url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
   sha256: 804edd2bdb1db740ebf1abe660f6a0ee26b8b2a28f50c523bfbda5817718b2f7
-  patches:
-    - 01-install.patch
-    - 02-numpy.patch
-    - 03-windows.patch
-    - 04-macos.patch
 
 build:
   ignore_run_exports:
