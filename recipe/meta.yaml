@@ -65,7 +65,7 @@ about:
   home: https://cryoem.ucla.edu/microed
   license: ISC
   license_file: LICENSE
-  summary: "Convert electron diffraction images to SMV format"
+  summary: "Convert electron diffraction sweeps to other formats"
   description: |
     The MicroED tools convert contiguous sequences of electron
     diffraction images, or MicroED sweeps, to the Super Marty View
