@@ -38,7 +38,7 @@ requirements:
     - make                                # [unix]
     - numpy                               # [build_platform != target_platform]
     - pandoc         2.*
-    - pkg-config
+    - pkgconf
     - python         >=3.9                # [build_platform != target_platform]
     - winflexbison   >=2.2,<3             # [win]
   host:
