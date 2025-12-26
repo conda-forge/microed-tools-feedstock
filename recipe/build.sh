@@ -39,10 +39,6 @@ if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
     numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${_include_dir}"
 fi
 
-test "${PKG_BUILDNUM}" != "0" && sed                                       \
-    -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
-    -i.bak "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
-
 cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                              \
     -DCMAKE_C_FLAGS:STRING="${CFLAGS} -Wall"                   \

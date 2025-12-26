@@ -35,13 +35,11 @@ requirements:
     - flex           >=2.5.34,<3          # [unix]
     - libxslt        >=1.0.32
     - m2-coreutils                        # [win]
-    - m2-sed                              # [win]
     - make                                # [unix]
     - numpy                               # [build_platform != target_platform]
     - pandoc         2.*
     - pkg-config
     - python         >=3.9                # [build_platform != target_platform]
-    - sed                                 # [unix]
     - winflexbison   >=2.2,<3             # [win]
   host:
     - cython         >=0.27.1
