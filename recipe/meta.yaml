@@ -1,6 +1,6 @@
 {% set name = "MicroED tools" %}
 {% set tarname = name|lower|replace(' ', '-') %}
-{% set version = "0.1.0-dev.9" %}
+{% set version = "0.1.0-dev.10" %}
 
 package:
   name: {{ tarname }}
@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
-  sha256: 804edd2bdb1db740ebf1abe660f6a0ee26b8b2a28f50c523bfbda5817718b2f7
+  sha256: 872f1df16f231cd2ea585d078178469b4531f2a34132db1d29a0d6e1ca392f1e
 
 build:
   ignore_run_exports:
@@ -17,7 +17,7 @@ build:
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
-  number: 4
+  number: 0
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
