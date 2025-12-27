@@ -11,9 +11,9 @@ source:
   sha256: 872f1df16f231cd2ea585d078178469b4531f2a34132db1d29a0d6e1ca392f1e
 
 build:
-  ignore_run_exports:
-    - numpy
-    - python
+  #ignore_run_exports:
+  #  - numpy
+  #  - python
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
@@ -53,6 +53,8 @@ requirements:
     - python         {{ python }}
 
 test:
+  commands:
+    - mrc2smv -V
   imports:
     - pysmv
   requires:

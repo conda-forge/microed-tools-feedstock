@@ -20,19 +20,20 @@ if test -n "${LD_RUN_PATH}"; then
 elif test -n "${OSX_ARCH}"; then
     iconv_args="${iconv_args} -DIconv_LIBRARY:PATH=${CONDA_BUILD_SYSROOT}/usr/lib/libiconv.tbd"
 
-    if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.14" ; then
-        CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-    fi
+    #if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.14" ; then
+    #    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    #fi
 fi
 
-if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
-    if _version_lt "${NPY_VER}" "2.0" ; then
-        _include_dir="${SP_DIR}/numpy/core/include"
-    else
-        _include_dir="${SP_DIR}/numpy/_core/include"
-    fi
-    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${_include_dir}"
-fi
+#if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
+#    # This SHOULD not be necessary!
+#    if _version_lt "${NPY_VER}" "2.0" ; then
+#        _include_dir="${SP_DIR}/numpy/core/include"
+#    else
+#        _include_dir="${SP_DIR}/numpy/_core/include"
+#    fi
+#    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${_include_dir}"
+#fi
 
 cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                              \
@@ -45,3 +46,4 @@ cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}                \
 
 cmake --build .
 cmake --install .
+cat MICROED-TOOLS-VERSION-FILE
