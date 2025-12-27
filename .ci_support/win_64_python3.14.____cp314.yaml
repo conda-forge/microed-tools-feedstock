@@ -1,27 +1,15 @@
-ace:
-- 8.0.5
 c_compiler:
 - vs2022
 c_stdlib:
 - vs
 channel_sources:
-- conda-forge/label/microed-data_dev,conda-forge,conda-forge/label/python_rc
+- conda-forge/label/microed-data_dev,conda-forge
 channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
 - vs2022
-libarchive:
-- '3.8'
 libiconv:
 - '1'
-libtiff:
-- '4.7'
-libxml2_devel:
-- '2.14'
-nlopt:
-- '2.10'
-numpy:
-- '2'
 pin_run_as_build:
   python:
     min_pin: x.x
@@ -30,6 +18,3 @@ python:
 - 3.14.* *_cp314
 target_platform:
 - win-64
-zip_keys:
-- - python
-  - channel_sources
