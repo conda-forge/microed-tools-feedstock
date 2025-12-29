@@ -37,7 +37,7 @@ requirements:
     - libxslt        >=1.0.32
     - m2-coreutils                        # [win]
     - make                                # [unix]
-    - numpy          >=1.7,<3             # [build_platform != target_platform]
+    - numpy                               # [build_platform != target_platform]
     - pandoc         2.*
     - pkgconf
     - python                              # [build_platform != target_platform]
