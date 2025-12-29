@@ -12,12 +12,11 @@ source:
 
 build:
   ignore_run_exports:
-  #  - numpy
-  #  - python
-    - libxml2                # [win]
-    - numpy                  # [win]
-  #ignore_run_exports_from:
-  #  - {{ compiler('cxx') }}  # [win]
+    - libxml2
+    - numpy
+    - python                 # [unix]
+  ignore_run_exports_from:
+    - {{ compiler('cxx') }}  # [win]
   #  - {{ stdlib('c') }}      # [win]
   number: 0
   script_env:
