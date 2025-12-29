@@ -31,27 +31,27 @@ requirements:
     - cmake          >=3.24,<5
     - coreutils                           # [unix]
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - cython                              # [build_platform != target_platform]
+    - cython         >=0.27.1             # [build_platform != target_platform]
     - docbook-xsl    >=1.79.2,<2
     - flex           >=2.5.34,<3          # [unix]
     - libxslt        >=1.0.32
     - m2-coreutils                        # [win]
     - make                                # [unix]
-    - numpy                               # [build_platform != target_platform]
+    - numpy          >=1.7,<3             # [build_platform != target_platform]
     - pandoc         2.*
     - pkgconf
-    - python         >=3.9                # [build_platform != target_platform]
+    - python                              # [build_platform != target_platform]
     - winflexbison   >=2.2,<3             # [win]
   host:
-    - cython         >=0.27.1
+    - cython
     - libarchive     >=3.0.2,<4
     - libiconv                            # [win]
     - libtiff        >=4.5,<5
     - libxml2-devel  >=2.6,<3
     - nlopt          2.*                  # [unix]
     - nlopt          >=2.8,<3             # [win]
-    - numpy          >=1.7,<3
-    - python         {{ python }}
+    - numpy
+    - python
   run:
     - python
 
