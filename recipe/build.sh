@@ -20,9 +20,9 @@ if test -n "${LD_RUN_PATH}"; then
 elif test -n "${OSX_ARCH}"; then
     iconv_args="${iconv_args} -DIconv_LIBRARY:PATH=${CONDA_BUILD_SYSROOT}/usr/lib/libiconv.tbd"
 
-    #if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.14" ; then
-    #    CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
-    #fi
+    if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.14" ; then
+        CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+    fi
 fi
 
 #if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
