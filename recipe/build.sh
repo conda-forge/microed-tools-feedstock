@@ -23,6 +23,10 @@ elif test -n "${OSX_ARCH}"; then
     if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.14" ; then
         CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
     fi
+
+    if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
+	numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/_core/include"
+    fi
 fi
 
 #if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
