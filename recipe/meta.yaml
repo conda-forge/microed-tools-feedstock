@@ -51,6 +51,8 @@ requirements:
     - nlopt          >=2.8,<3             # [win]
     - numpy          >=1.7,<3
     - python         {{ python }}
+  run:
+    - python
 
 test:
   commands:
