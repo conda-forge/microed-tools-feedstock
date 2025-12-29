@@ -11,12 +11,14 @@ source:
   sha256: d5ad068ad53074df871ba4170677ebf59d10d10d362a26ec05b1810d2e78b53a
 
 build:
-  #ignore_run_exports:
+  ignore_run_exports:
   #  - numpy
   #  - python
-  ignore_run_exports_from:
-    - {{ compiler('cxx') }}  # [win]
-    - {{ stdlib('c') }}      # [win]
+    - libxml2                # [win]
+    - numpy                  # [win]
+  #ignore_run_exports_from:
+  #  - {{ compiler('cxx') }}  # [win]
+  #  - {{ stdlib('c') }}      # [win]
   number: 0
   script_env:
     - USER                   # [unix]
