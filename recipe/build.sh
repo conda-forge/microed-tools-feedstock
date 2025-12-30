@@ -25,19 +25,9 @@ elif test -n "${OSX_ARCH}"; then
     fi
 
     if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
-	numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/_core/include"
+        numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/_core/include"
     fi
 fi
-
-#if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
-#    # This SHOULD not be necessary!
-#    if _version_lt "${NPY_VER}" "2.0" ; then
-#        _include_dir="${SP_DIR}/numpy/core/include"
-#    else
-#        _include_dir="${SP_DIR}/numpy/_core/include"
-#    fi
-#    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${_include_dir}"
-#fi
 
 cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                              \
