@@ -18,30 +18,16 @@ iconv_args="-DIconv_INCLUDE_DIR:PATH=${CONDA_BUILD_SYSROOT}/usr/include"
 if test -n "${LD_RUN_PATH}"; then
     iconv_args="${iconv_args} -DIconv_IS_BUILT_IN:BOOL=TRUE"
 elif test -n "${OSX_ARCH}"; then
-    if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.11" ; then
-        _libiconv="${CONDA_BUILD_SYSROOT}/usr/lib/libiconv.dylib"
-    else
-        _libiconv="${CONDA_BUILD_SYSROOT}/usr/lib/libiconv.tbd"
-    fi
-    iconv_args="${iconv_args} -DIconv_LIBRARY:PATH=${_libiconv}"
+    iconv_args="${iconv_args} -DIconv_LIBRARY:PATH=${CONDA_BUILD_SYSROOT}/usr/lib/libiconv.tbd"
 
     if _version_lt "${MACOSX_DEPLOYMENT_TARGET}" "10.14" ; then
         CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
     fi
-fi
 
-if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
-    if _version_lt "${NPY_VER}" "2.0" ; then
-        _include_dir="${SP_DIR}/numpy/core/include"
-    else
-        _include_dir="${SP_DIR}/numpy/_core/include"
+    if test "${CONDA_BUILD_CROSS_COMPILATION}" = "1"; then
+        numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${SP_DIR}/numpy/_core/include"
     fi
-    numpy_args="-DPython3_NumPy_INCLUDE_DIR:PATH=${_include_dir}"
 fi
-
-test "${PKG_BUILDNUM}" != "0" && sed                                       \
-    -e "s:^\(MICROED_TOOLS_VERSION_BUILDMETADATA=\).*$:\1${PKG_BUILDNUM}:" \
-    -i.bak "${SRC_DIR}/MICROED-TOOLS-VERSION-FILE"
 
 cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}                \
     -DBUILD_PYTHON_MODULE:BOOL=ON                              \

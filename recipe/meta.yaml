@@ -1,6 +1,6 @@
 {% set name = "MicroED tools" %}
 {% set tarname = name|lower|replace(' ', '-') %}
-{% set version = "0.1.0-dev.9" %}
+{% set version = "0.1.0-dev.10" %}
 
 package:
   name: {{ tarname }}
@@ -8,21 +8,17 @@ package:
 
 source:
   url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
-  sha256: 804edd2bdb1db740ebf1abe660f6a0ee26b8b2a28f50c523bfbda5817718b2f7
-  patches:
-    - 01-install.patch
-    - 02-numpy.patch
-    - 03-windows.patch
-    - 04-macos.patch
+  sha256: 8870aaed97e9d11cc8cb1a7e1252bdb9db8a19b2fbd71e023e8c21f857c7b341
 
 build:
   ignore_run_exports:
+    - libxml2
     - numpy
-    - python
+    - python                 # [unix]
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
-  number: 4
+  number: 0
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
@@ -32,39 +28,29 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - cmake          >=3.18,<4
-    - coreutils                           # [unix]
+    - cmake          >=3.24,<5
     - cross-python_{{ target_platform }}  # [build_platform != target_platform]
-    - cython                              # [build_platform != target_platform]
+    - cython         >=0.27.1             # [build_platform != target_platform]
     - docbook-xsl    >=1.79.2,<2
     - flex           >=2.5.34,<3          # [unix]
     - libxslt        >=1.0.32
-    - m2-coreutils                        # [win]
-    - m2-sed                              # [win]
     - make                                # [unix]
     - numpy                               # [build_platform != target_platform]
     - pandoc         2.*
-    - pkg-config
+    - pkgconf
     - python                              # [build_platform != target_platform]
-    - sed                                 # [unix]
     - winflexbison   >=2.2,<3             # [win]
   host:
-    - cython         >=0.27.1
+    - cython
     - libarchive     >=3.0.2,<4
     - libiconv                            # [win]
     - libtiff        >=4.5,<5
-    - libxml2-devel        >=2.1,<3
+    - libxml2-devel  >=2.6,<3
     - nlopt          2.*                  # [unix]
     - nlopt          >=2.8,<3             # [win]
-    - numpy          >=1.7,<3
-    - python         {{ python }}
-  run:
-    - libarchive
-    - libiconv                            # [win]
-    - libtiff
-    - libxml2-devel
-    - nlopt
     - numpy
+    - python
+  run:
     - python
 
 test:
@@ -80,11 +66,11 @@ about:
   home: https://cryoem.ucla.edu/microed
   license: ISC
   license_file: LICENSE
-  summary: "Convert electron diffraction images to SMV format"
+  summary: "Convert electron diffraction sweeps to other formats"
   description: |
     The MicroED tools convert contiguous sequences of electron
     diffraction images, or MicroED sweeps, to the Super Marty View
-    (SMV) format.
+    (SMV) or tagged image file format (TIFF).
 
 extra:
   recipe-maintainers:
