@@ -40,4 +40,3 @@ cmake ${CMAKE_ARGS} ${iconv_args} ${numpy_args}                \
 
 cmake --build .
 cmake --install .
-cat MICROED-TOOLS-VERSION-FILE

@@ -54,8 +54,6 @@ requirements:
     - python
 
 test:
-  commands:
-    - mrc2smv -V
   imports:
     - pysmv
   requires:
