@@ -11,7 +11,7 @@ Summary: Convert electron diffraction sweeps to other formats
 
 The MicroED tools convert contiguous sequences of electron
 diffraction images, or MicroED sweeps, to the Super Marty View
-(SMV) format.
+(SMV) or tagged image file format (TIFF).
 
 
 Current build status
