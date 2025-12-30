@@ -8,7 +8,7 @@ package:
 
 source:
   url: https://cryoem.ucla.edu/downloads/{{ tarname }}-{{ version }}.tar.gz
-  sha256: d5ad068ad53074df871ba4170677ebf59d10d10d362a26ec05b1810d2e78b53a
+  sha256: 8870aaed97e9d11cc8cb1a7e1252bdb9db8a19b2fbd71e023e8c21f857c7b341
 
 build:
   ignore_run_exports:
