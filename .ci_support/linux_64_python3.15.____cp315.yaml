@@ -7,7 +7,7 @@ c_stdlib:
 c_stdlib_version:
 - '2.17'
 channel_sources:
-- conda-forge,conda-forge/label/python_rc
+- conda-forge,conda-forge/label/python_rc,conda-forge/label/microed-data_dev
 channel_targets:
 - conda-forge microed-tools_dev
 cxx_compiler:
