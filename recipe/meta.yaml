@@ -12,9 +12,9 @@ source:
 
 build:
   ignore_run_exports:
+    - libpython              # [unix]
     - libxml2
     - numpy
-    - python                 # [unix]
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
@@ -33,7 +33,6 @@ requirements:
     - cython         >=0.27.1             # [build_platform != target_platform]
     - docbook-xsl    >=1.79.2,<2
     - flex           >=2.5.34,<3          # [unix]
-    - libpython                           # [build_platform != target_platform]
     - libxslt        >=1.0.32
     - make                                # [unix]
     - numpy                               # [build_platform != target_platform]
