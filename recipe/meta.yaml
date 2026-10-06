@@ -15,6 +15,7 @@ build:
     - libpython              # [unix]
     - libxml2
     - numpy
+    - python                 # [unix]
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
@@ -52,7 +53,6 @@ requirements:
     - numpy
     - python
   run:
-    - libpython
     - python
 
 test:
