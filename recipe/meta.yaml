@@ -33,6 +33,7 @@ requirements:
     - cython         >=0.27.1             # [build_platform != target_platform]
     - docbook-xsl    >=1.79.2,<2
     - flex           >=2.5.34,<3          # [unix]
+    - libpython                           # [build_platform != target_platform]
     - libxslt        >=1.0.32
     - make                                # [unix]
     - numpy                               # [build_platform != target_platform]
@@ -44,6 +45,7 @@ requirements:
     - cython
     - libarchive     >=3.0.2,<4
     - libiconv                            # [win]
+    - libpython
     - libtiff        >=4.5,<5
     - libxml2-devel  >=2.6,<3
     - nlopt          2.*                  # [unix]
@@ -51,6 +53,7 @@ requirements:
     - numpy
     - python
   run:
+    - libpython
     - python
 
 test:
