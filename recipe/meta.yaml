@@ -12,13 +12,14 @@ source:
 
 build:
   ignore_run_exports:
+    - libpython              # [unix]
     - libxml2
     - numpy
     - python                 # [unix]
   ignore_run_exports_from:
     - {{ compiler('cxx') }}  # [win]
     - {{ stdlib('c') }}      # [win]
-  number: 0
+  number: 1
   script_env:
     - USER                   # [unix]
     - USERNAME               # [win]
@@ -44,6 +45,7 @@ requirements:
     - cython
     - libarchive     >=3.0.2,<4
     - libiconv                            # [win]
+    - libpython
     - libtiff        >=4.5,<5
     - libxml2-devel  >=2.6,<3
     - nlopt          2.*                  # [unix]
